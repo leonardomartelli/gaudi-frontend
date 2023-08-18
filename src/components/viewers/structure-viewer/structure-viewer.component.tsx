@@ -1,6 +1,6 @@
 import React from "react";
-import { StructureViewerContract } from "./structure-viewer.interface";
 import * as d3 from "d3";
+import { StructureViewerContract } from "./structure-viewer.interface";
 
 export function StructureViewer(props: StructureViewerContract) {
   const width = props.width;

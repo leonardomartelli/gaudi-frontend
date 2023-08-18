@@ -1,9 +1,14 @@
+import React from "react";
 import { useState } from "react";
 import { CommonButton } from "../../components/buttons/common-button/common-button.component";
 import { StructureViewer } from "../../components/viewers/structure-viewer/structure-viewer.component";
 import OptimizationApi from "../../services/Optimization/apis/OptimizationApi";
 
 export function GaudiMain() {
+
+  
+  let [densities, setDensitites] = useState(Array<number>())
+
   return (
     <div>
       <StructureViewer
