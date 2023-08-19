@@ -3,14 +3,16 @@ import ServiceBase from "../../ServiceBase";
 import { Project } from "../../../models/project/project.model";
 import { Result } from "../../../models/optimization/result.model";
 
-const url = "http://localhost:5000";
+const url = "http://127.0.0.1:5000";
 
 function startOptimization(project: Project) {
   return new Promise<string>((resolve, reject) => {
     axios
       .post<string>(
         `${url}/optimize`,
-        project,
+        {
+          project: project,
+        },
         ServiceBase.getAxiosConfig(ServiceBase.getJsonHeaders())
       )
       .then((res) => resolve(res.data))
