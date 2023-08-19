@@ -1,4 +1,4 @@
-import { Domain } from "domain";
+import { Domain } from "./domain.model";
 import { BoundaryConditions } from "./boundaryConditions.model";
 
 export class Project {
