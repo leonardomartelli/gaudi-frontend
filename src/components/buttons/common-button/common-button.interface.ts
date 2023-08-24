@@ -1,6 +1,7 @@
 import { CommonComponentContract } from "../../components.interface";
 
-export interface CommonButtonContract extends CommonComponentContract{
-    label?: string,
-    onClick: () => void
+export interface CommonButtonContract extends CommonComponentContract {
+  label?: string;
+  icon?: string;
+  onClick: () => void;
 }
