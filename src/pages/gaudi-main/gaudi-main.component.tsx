@@ -4,56 +4,37 @@ import { CommonButton } from "../../components/buttons/common-button/common-butt
 import { StructureViewer } from "../../components/viewers/structure-viewer/structure-viewer.component";
 import OptimizationApi from "../../services/Optimization/apis/OptimizationApi";
 import { Project } from "../../models/project/project.model";
+import { ProjectToolBar } from "../../components/toolbars/project-toolbar/project-toolbar.component";
+import { ProjectConfigurator } from "../../components/configurators/project-configurator/project-configurator.component";
 
 export function GaudiMain(props: any) {
-  let [densities, setDensitites] = useState(
-    Array(
-      project.domain.dimensions.width * project.domain.dimensions.height
-    ).fill(0)
-  );
+  let [project, setProject] = useState<Project>(defaultProject);
 
-  let [triggerUpdate, setTriggerUpdate] = useState(0);
-
-  let [optimizationIdentifier, setOptimizationIdentifier] = useState("");
-
-  const onOptimizationStart = async () => {
-    setOptimizationIdentifier(await OptimizationApi.startOptimization(project));
-
-    setDensitites(
-      Array(
-        project.domain.dimensions.width * project.domain.dimensions.height
-      ).fill(0.1)
-    );
+  let style = {
+    width: "80%",
+    height: "400px",
   };
 
-  useEffect(() => {
-    if (optimizationIdentifier === "") return;
-
-    const fetchResult = async () => {
-      let result = await OptimizationApi.getResult(optimizationIdentifier);
-
-      if (!result.finished) {
-        setDensitites(result.densities);
-      }
-    };
-
-    fetchResult().catch(console.error);
-  }, [triggerUpdate]);
+  let [input, setInput] = useState("");
 
   return (
     <div>
-      <StructureViewer
-        width={project.domain.dimensions.width}
-        height={project.domain.dimensions.height}
-        densities={densities}
-        triggerUpdate={(target) => setTriggerUpdate(target)}
+      <ProjectToolBar
+        updateProject={(newProj: Project) => setProject(newProj)}
+      ></ProjectToolBar>
+
+      <ProjectConfigurator project={project} />
+      <input style={style} onChange={(e) => setInput(e.target.value)}></input>
+
+      <CommonButton
+        onClick={() => setProject(JSON.parse(input))}
+        label="Config Proj"
       />
-      <button onClick={onOptimizationStart}> Otimizar </button>
     </div>
   );
 }
 
-const project: Project = {
+const defaultProject: Project = {
   domain: {
     materialProperties: {
       elasticity: 0.3,
