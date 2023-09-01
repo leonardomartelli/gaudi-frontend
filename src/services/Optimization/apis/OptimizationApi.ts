@@ -29,9 +29,19 @@ function getResult(indentifier: string) {
   });
 }
 
+function terminateOptimization(indentifier: string) {
+  return new Promise<string>((resolve, reject) => {
+    axios
+      .delete<string>(`${url}/optimization?id=${indentifier}`)
+      .then((res) => resolve(res.data))
+      .catch((res) => reject(res));
+  });
+}
+
 const out = {
   startOptimization,
   getResult,
+  terminateOptimization,
 };
 
 export default out;
