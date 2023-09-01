@@ -1,0 +1,15 @@
+@import "src/assets/scss/colors.scss";
+
+.button {
+  display: inline-grid;
+  align-items: center;
+  align-self: center;
+  color: $alice-blue;
+  text-align: center;
+  background-color: $poppy;
+  border: none;
+  padding: 15px 32px;
+  text-align: center;
+  text-decoration: none;
+  display: inline-block;
+}
