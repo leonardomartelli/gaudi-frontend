@@ -1,11 +1,8 @@
 import React, { useEffect } from "react";
 import { useState } from "react";
-import { CommonButton } from "../../components/buttons/common-button/common-button.component";
-import { StructureViewer } from "../../components/viewers/structure-viewer/structure-viewer.component";
-import OptimizationApi from "../../services/Optimization/apis/OptimizationApi";
 import { Project } from "../../models/project/project.model";
 import { ProjectToolBar } from "../../components/toolbars/project-toolbar/project-toolbar.component";
-import { ProjectConfigurator } from "../../components/configurators/project-configurator/project-configurator.component";
+import { ProjectViewer } from "../../components/viewers/project-viewer/project-viewer.component";
 
 export function GaudiMain(props: any) {
   let [project, setProject] = useState<Project>(defaultProject);
@@ -23,13 +20,7 @@ export function GaudiMain(props: any) {
         updateProject={(newProj: Project) => setProject(newProj)}
       ></ProjectToolBar>
 
-      <ProjectConfigurator project={project} />
-      <input style={style} onChange={(e) => setInput(e.target.value)}></input>
-
-      <CommonButton
-        onClick={() => setProject(JSON.parse(input))}
-        label="Config Proj"
-      />
+      <ProjectViewer project={project} />
     </div>
   );
 }

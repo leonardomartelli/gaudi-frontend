@@ -7,7 +7,7 @@ export function StructureViewer(props: StructureViewerContract) {
   const height = props.height;
   const densities = props.densities;
 
-  const viewerHeight = 600;
+  const viewerHeight = 800;
 
   let [counter, setCounter] = useState(1);
 
