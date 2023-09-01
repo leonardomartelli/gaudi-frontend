@@ -1,0 +1,14 @@
+@import "src/assets/scss/colors.scss";
+
+.variables {
+  width: 25%;
+  display: inline;
+  align-items: start;
+  background-color: $honululu-blue;
+  color: $alice-blue;
+  align-self: center;
+  margin: 5%;
+  text-align: center;
+  list-style-type: disc;
+  text-indent: 12px;
+}
