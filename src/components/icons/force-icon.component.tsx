@@ -2,7 +2,7 @@ import { IconContract } from "../components.interface";
 
 export function ForceIcon(props: IconContract) {
   return (
-    <svg width="16" height="93" viewBox="0 0 16 93" fill="none">
+    <svg width="16" height={props.size ?? 93} viewBox="0 0 16 93" fill="none">
       <path d="M8 93L0.205772 75H15.7942L8 93Z" fill={props.style?.color} />
       <rect
         x="10"

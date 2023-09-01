@@ -1,8 +1,13 @@
 import { IconContract } from "../components.interface";
 
-export function ForceIcon(props: IconContract) {
+export function FixedSupportIcon(props: IconContract) {
   return (
-    <svg width="59" height="57" viewBox="0 0 59 57" fill="none">
+    <svg
+      width={props.size ?? 59}
+      height={props.size ?? 59}
+      viewBox="0 0 59 59"
+      fill="none"
+    >
       <path
         d="M55.25 28.6029C58.25 30.3349 58.25 34.6651 55.25 36.3971L24.5 54.1506C21.5 55.8827 17.75 53.7176 17.75 50.2535L17.75 14.7465C17.75 11.2824 21.5 9.11731 24.5 10.8494L55.25 28.6029Z"
         stroke={props.style?.color}
