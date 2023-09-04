@@ -1,40 +1,109 @@
 import { CommonButton } from "../../buttons/common-button/common-button.component";
-import React, { useRef } from "react";
+import React, { useContext, useRef } from "react";
 import styles from "./project-toolbar.module.scss";
-import { ProjectToolBarContract } from "./project-toolbar.interface";
+import { ArrowDownIcon } from "../../icons/arrow-down-icon.component";
+import constants from "../../../assets/constants";
+import { SeparatorIcon } from "../../icons/separator-icon.component";
+import { MobileSupportIcon } from "../../icons/mobile-support-icon.component";
+import { FixedSupportIcon } from "../../icons/fixed-support-icon.component";
+import { ForceIcon } from "../../icons/force-icon.component";
+import { ArrowUpIcon } from "../../icons/arrow-up-icon.component";
+import { FileSelection } from "../../misc/file-selector/file-selection.component";
+import { VoidConstantRegionIcon } from "../../icons/void-constant-region-icon.component";
+import { MaterialConstanRegionIcon } from "../../icons/material-constant-region-icon.component";
+import { RestartIcon } from "../../icons/restart-icon.component";
+import { StartIcon } from "../../icons/start-icon.component";
+import { MaterialPropertiesIcon } from "../../icons/material-properties-icon.component";
+import { OptimizationContext } from "../../../contexts/optimization-context/optimization-context";
 
-export function ProjectToolBar(props: ProjectToolBarContract) {
+export function ProjectToolBar() {
+  const inputRef = useRef<HTMLInputElement>(null);
+
+  let context = useContext(OptimizationContext);
+
+  const onClick = () => {
+    inputRef.current!.click();
+  };
+
   const exportProject = () => {};
 
   const onFileLoaded = async (file: File) => {
     const project = JSON.parse(await file.text());
 
-    props.updateProject(project);
-  };
-
-  const onFileSelected = (event: React.ChangeEvent<HTMLInputElement>) => {
-    if (event.target && event.target.files) {
-      let file = event.target.files[0];
-
-      if (file) {
-        onFileLoaded(file);
-      }
-    }
+    context.updateProject(project);
   };
 
   return (
     <div className={styles.toolbar}>
-      <label>
-        <input
-          type="file"
-          hidden={true}
-          onChange={(e) => {
-            onFileSelected(e);
-          }}
-        />
-        <img src="images/arrow.up.doc.svg" />
-        Upload
-      </label>
+      <FileSelection inputReference={inputRef} onFileSelection={onFileLoaded} />
+
+      <CommonButton
+        icon={ArrowUpIcon}
+        iconColor={constants.ALICE_BLUE}
+        label="Carregar Projeto"
+        onClick={onClick}
+      />
+
+      <CommonButton
+        icon={ArrowDownIcon}
+        iconColor={constants.ALICE_BLUE}
+        label="Salvar Projeto"
+        onClick={() => {}}
+      />
+      <CommonButton
+        icon={SeparatorIcon}
+        iconColor={constants.ALICE_BLUE}
+        onClick={() => {}}
+      />
+      <CommonButton
+        icon={MobileSupportIcon}
+        iconColor={constants.ALICE_BLUE}
+        label="Criar Suporte Móvel"
+        onClick={() => {}}
+      />
+      <CommonButton
+        icon={FixedSupportIcon}
+        iconColor={constants.ALICE_BLUE}
+        label="Criar Suporte Fixo"
+        onClick={() => {}}
+      />
+      <CommonButton
+        icon={ForceIcon}
+        iconColor={constants.ALICE_BLUE}
+        label="Criar Carga"
+        onClick={() => {}}
+      />
+      <CommonButton
+        icon={VoidConstantRegionIcon}
+        iconColor={constants.ALICE_BLUE}
+        label="Criar Vazio Constante"
+        onClick={() => {}}
+      />
+      <CommonButton
+        icon={MaterialConstanRegionIcon}
+        iconColor={constants.ALICE_BLUE}
+        label="Criar Material Constante"
+        onClick={() => {}}
+      />
+      <CommonButton
+        icon={SeparatorIcon}
+        iconColor={constants.ALICE_BLUE}
+        onClick={() => {}}
+      />
+
+      <CommonButton
+        icon={MaterialPropertiesIcon}
+        iconColor={constants.ALICE_BLUE}
+        label="Editar Propriedades Materiais"
+        onClick={() => {}}
+      />
+
+      <CommonButton
+        icon={StartIcon}
+        iconColor={constants.ALICE_BLUE}
+        label="Iniciar Otimização"
+        onClick={context.onOptimizationStart}
+      />
     </div>
   );
 }
