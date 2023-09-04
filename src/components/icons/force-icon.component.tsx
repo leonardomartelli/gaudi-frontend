@@ -2,31 +2,10 @@ import { IconContract } from "../components.interface";
 
 export function ForceIcon(props: IconContract) {
   return (
-    <svg width="16" height={props.size ?? 93} viewBox="0 0 16 93" fill="none">
-      <path d="M8 93L0.205772 75H15.7942L8 93Z" fill={props.style?.color} />
-      <rect
-        x="10"
-        y="75"
-        width="4"
-        height="26"
-        transform="rotate(-180 10 75)"
-        fill={props.style?.color}
-      />
-      <rect
-        x="10"
-        y="75"
-        width="4"
-        height="26"
-        transform="rotate(-180 10 75)"
-        fill={props.style?.color}
-      />
-      <circle
-        cx="8"
-        cy="44"
-        r="3"
-        transform="rotate(-180 8 44)"
-        fill={props.style?.color}
-      />
+    <svg width="16" height="55" viewBox="0 0 16 55" fill="none">
+      <path d="M8 55L0.205772 37L15.7942 37L8 55Z" fill={props.style?.color} />
+      <rect x="6" y="8" width="4" height="29" fill={props.style?.color} />
+      <circle cx="8" cy="3" r="3" fill={props.style?.color} />
     </svg>
   );
 }

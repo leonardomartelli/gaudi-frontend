@@ -2,17 +2,12 @@ import { IconContract } from "../components.interface";
 
 export function VoidConstantRegionIcon(props: IconContract) {
   return (
-    <svg
-      width={props.size ?? 43}
-      height={props.size ?? 43}
-      viewBox="0 0 43 43"
-      fill="none"
-    >
+    <svg width="59" height="59" viewBox="0 0 59 59" fill="none">
       <path
-        d="M2 2V41H17.7164V28.5417H28.7761V16.2297H41V2H2Z"
+        d="M2 2V57H24.1642V39.4306H39.7612V22.0676H57V2H2Z"
         stroke={props.style?.color}
-        stroke-width="3"
-        stroke-linejoin="round"
+        strokeWidth="3"
+        strokeLinejoin="round"
       />
     </svg>
   );
