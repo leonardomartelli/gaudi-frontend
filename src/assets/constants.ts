@@ -1,15 +1,15 @@
-const HONOLULU_BLUE = "#asasas";
+const HONOLULU_BLUE = "#1679BE";
 const POPPY = "#da3540";
 const davys_gray = "#asasas";
 const ALICE_BLUE = "#e8f1f2";
-const frog_green = "#asasas";
+const FROG_GREEN = "#3f0";
 
 const out = {
   HONOLULU_BLUE,
   POPPY,
   davys_gray,
   ALICE_BLUE,
-  frog_green,
+  FROG_GREEN,
 };
 
 export default out;

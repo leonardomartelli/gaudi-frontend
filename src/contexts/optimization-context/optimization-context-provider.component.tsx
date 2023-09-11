@@ -1,7 +1,7 @@
 import React, { PropsWithChildren, useEffect, useState } from "react";
 import { OptimizationContext } from "./optimization-context";
 import OptimizationApi from "../../services/Optimization/apis/OptimizationApi";
-import { defaultProject } from "../../models/project/project.model";
+import { Project, defaultProject } from "../../models/project/project.model";
 import { OptimizationContextProviderContract } from "./optimization-context-provider.interface";
 
 export function OptimizationContextProvider(
@@ -9,10 +9,19 @@ export function OptimizationContextProvider(
 ) {
   let [project, setProject] = useState(defaultProject);
 
+  const updateProject = (newProject: Project) => {
+    setProject(newProject);
+    setDensitites(
+      Array(
+        project.domain.dimensions.width * project.domain.dimensions.height
+      ).fill(1)
+    );
+  };
+
   let [densities, setDensitites] = useState<Array<number>>(
     Array(
       project.domain.dimensions.width * project.domain.dimensions.height
-    ).fill(0)
+    ).fill(1)
   );
 
   let [triggerUpdate, setTriggerUpdate] = useState(0);
@@ -28,7 +37,7 @@ export function OptimizationContextProvider(
     setDensitites(
       Array(
         project.domain.dimensions.width * project.domain.dimensions.height
-      ).fill(0.1)
+      ).fill(1)
     );
   };
 
@@ -54,7 +63,7 @@ export function OptimizationContextProvider(
     return {
       densities: densities,
       project: project,
-      updateProject: setProject,
+      updateProject: updateProject,
       onOptimizationStart: onOptimizationStart,
       objective: objective,
       volume: volume,
