@@ -89,7 +89,7 @@ export function StructureViewer(props: StructureViewerContract) {
       .attr("width", squareSize)
       .attr("height", squareSize)
       .attr("class", "dens")
-      .attr("fill", "#0f1b42")
+      .attr("fill", constants.NIGHT_BLACK)
       .attr(
         "fill-opacity",
         (d: number) => densities[to_id(d % width, Math.floor(d / width))]
