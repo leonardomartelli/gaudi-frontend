@@ -1,3 +1,4 @@
+import { eCreationState } from "../../../models/enums/eCreationState";
 import { ConstantRegion } from "../../../models/project/constantRegion.model";
 import { Force } from "../../../models/project/force.model";
 import { Support } from "../../../models/project/support.model";
@@ -11,4 +12,6 @@ export interface StructureViewerContract extends CommonComponentContract {
   width: number;
   height: number;
   triggerUpdate: (trigger: number) => void;
+  creationState: eCreationState;
+  setCreationState: (newState: eCreationState) => void;
 }

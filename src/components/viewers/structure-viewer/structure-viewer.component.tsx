@@ -1,4 +1,4 @@
-import React, { useEffect, useRef, useState } from "react";
+import React, { useContext, useEffect, useRef, useState } from "react";
 import * as d3 from "d3";
 import { StructureViewerContract } from "./structure-viewer.interface";
 import constants from "../../../assets/constants";
@@ -6,8 +6,12 @@ import { Force } from "../../../models/project/force.model";
 import styles from "./structure-viewer.module.scss";
 import { Support } from "../../../models/project/support.model";
 import { ConstantRegion } from "../../../models/project/constantRegion.model";
-import { Position } from "../../../models/project/position.model";
+import { Dimensionable } from "../../../models/project/dimensionsable.model";
 import { PositionalCondition } from "../../../models/project/positionalCondition.model";
+import { OptimizationContext } from "../../../contexts/optimization-context/optimization-context";
+import { eCreationState } from "../../../models/enums/eCreationState";
+import { Position } from "../../../models/project/position.model";
+import { Dimensions } from "../../../models/project/dimensions.model";
 
 export function StructureViewer(props: StructureViewerContract) {
   const width = props.width;
@@ -23,6 +27,40 @@ export function StructureViewer(props: StructureViewerContract) {
   const squareSize = viewerHeight / height;
 
   const innerPadding = viewerHeight * 0.2;
+
+  let [creationXPosition, setCreationXPosition] = useState(0);
+  let [creationYPosition, setCreationYPosition] = useState(0);
+
+  useEffect(() => {
+    const creationPosition = new Position(creationXPosition, creationYPosition);
+
+    switch (props.creationState) {
+      case eCreationState.FORCE:
+        props.forces.push(new Force(-1, 1, creationPosition));
+        setPositionChanged(positionChanged + 1);
+        break;
+      case eCreationState.SUPPORT:
+        props.supports.push(new Support(creationPosition, 0, undefined));
+        setPositionChanged(positionChanged + 1);
+        break;
+      case eCreationState.VOID:
+        props.constantRegions.push(
+          new ConstantRegion(creationPosition, new Dimensions(10, 10), 0)
+        );
+        setPositionChanged(positionChanged + 1);
+        break;
+      case eCreationState.MATERIAL:
+        props.constantRegions.push(
+          new ConstantRegion(creationPosition, new Dimensions(10, 10), 1)
+        );
+        setPositionChanged(positionChanged + 1);
+        break;
+      default:
+        break;
+    }
+
+    props.setCreationState(eCreationState.NONE);
+  }, [creationXPosition]);
 
   useEffect(() => {
     const svg = d3.select(ref.current);
@@ -42,9 +80,9 @@ export function StructureViewer(props: StructureViewerContract) {
       return x * height + y;
     }
 
-    svg
-      .selectAll(".dens")
-      .data(d3.range(height * width))
+    const structure = svg
+      .selectAll<SVGRectElement, number>(".dens")
+      .data<number>(d3.range(height * width))
       .join("rect")
       .attr("x", (d: number) => (d % width) * squareSize)
       .attr("y", (d: number) => Math.floor(d / width) * squareSize)
@@ -57,11 +95,19 @@ export function StructureViewer(props: StructureViewerContract) {
         (d: number) => densities[to_id(d % width, Math.floor(d / width))]
       );
 
+    structure.on("click", (event: any) => {
+      const x = event.target.x.animVal.value;
+      const y = event.target.y.animVal.value;
+
+      setCreationXPosition(Math.round(x / squareSize));
+      setCreationYPosition(Math.round(y / squareSize));
+    });
+
     setCounter(counter + 1);
     props.triggerUpdate(counter);
   }, [densities]);
 
-  let [positionChanged, setPositionChenged] = useState(0);
+  let [positionChanged, setPositionChanged] = useState(0);
 
   let deltaX = 0;
   let deltaY = 0;
@@ -71,21 +117,148 @@ export function StructureViewer(props: StructureViewerContract) {
     deltaY = force.position.y * squareSize - Math.round(event.y);
   };
 
-  const dragging = (event: any, force: PositionalCondition) => {
+  const dragging = (event: any, positionalCondition: PositionalCondition) => {
     const x = Math.round((event.x + deltaX) / squareSize);
     const y = Math.round((event.y + deltaY) / squareSize);
 
-    force.setPosition(x, y, props.width, props.height);
+    let position = positionalCondition.position;
+
+    if (isDimensionable(positionalCondition)) {
+      const objectin = new ConstantRegion(
+        positionalCondition.position,
+        positionalCondition.dimensions,
+        0
+      );
+
+      objectin.setPosition(x, y, props.width, props.height);
+
+      position = objectin.position;
+    } else {
+      const objectin = new Force(0, 0, positionalCondition.position);
+      objectin.setPosition(x, y, props.width, props.height);
+
+      position = objectin.position;
+    }
+
+    positionalCondition.position = position;
+  };
+
+  const draggingCorner1 = (event: any, constantRegion: ConstantRegion) => {
+    const x = Math.round(event.x / squareSize);
+    const y = Math.round(event.y / squareSize);
+
+    let position = constantRegion.position;
+
+    var widthChange = position.x - x;
+    var heightChange = position.y - y;
+
+    constantRegion.dimensions.width += widthChange;
+    constantRegion.dimensions.height += heightChange;
+
+    if (constantRegion.dimensions.width < 10)
+      constantRegion.dimensions.width = 10;
+    else position.x -= widthChange;
+
+    if (constantRegion.dimensions.height < 10)
+      constantRegion.dimensions.height = 10;
+    else position.y -= heightChange;
+
+    constantRegion.position = position;
+  };
+
+  const draggingCorner2 = (event: any, constantRegion: ConstantRegion) => {
+    const x = Math.round(event.x / squareSize);
+    const y = Math.round(event.y / squareSize);
+
+    let position = constantRegion.position;
+
+    var widthChange = position.x + constantRegion.dimensions.width - x;
+    var heightChange = position.y - y;
+
+    constantRegion.dimensions.width -= widthChange;
+    constantRegion.dimensions.height += heightChange;
+
+    if (constantRegion.dimensions.width < 10)
+      constantRegion.dimensions.width = 10;
+
+    if (constantRegion.dimensions.height < 10)
+      constantRegion.dimensions.height = 10;
+    else position.y -= heightChange;
+
+    constantRegion.position = position;
+  };
+
+  const draggingCorner3 = (event: any, constantRegion: ConstantRegion) => {
+    const x = Math.round(event.x / squareSize);
+    const y = Math.round(event.y / squareSize);
+
+    let position = constantRegion.position;
+
+    var widthChange = position.x + constantRegion.dimensions.width - x;
+    var heightChange = position.y + constantRegion.dimensions.height - y;
+
+    constantRegion.dimensions.width -= widthChange;
+    constantRegion.dimensions.height -= heightChange;
+
+    if (constantRegion.dimensions.width < 10)
+      constantRegion.dimensions.width = 10;
+
+    if (constantRegion.dimensions.height < 10)
+      constantRegion.dimensions.height = 10;
+  };
+
+  const draggingCorner4 = (event: any, constantRegion: ConstantRegion) => {
+    const x = Math.round(event.x / squareSize);
+    const y = Math.round(event.y / squareSize);
+
+    let position = constantRegion.position;
+
+    var widthChange = position.x - x;
+    var heightChange = position.y + constantRegion.dimensions.height - y;
+
+    constantRegion.dimensions.width += widthChange;
+    constantRegion.dimensions.height -= heightChange;
+
+    if (constantRegion.dimensions.width < 10)
+      constantRegion.dimensions.width = 10;
+    else position.x -= widthChange;
+
+    if (constantRegion.dimensions.height < 10)
+      constantRegion.dimensions.height = 10;
+
+    constantRegion.position = position;
   };
 
   const dragEnded = (event: any, force: PositionalCondition) => {
-    setPositionChenged(positionChanged + 1);
+    setPositionChanged(positionChanged + 1);
   };
 
   const handler = d3
     .drag<SVGElement, PositionalCondition>()
     .on("start", dragStarted)
     .on("drag", dragging)
+    .on("end", dragEnded);
+
+  const handlerCorner1 = d3
+    .drag<SVGCircleElement, ConstantRegion>()
+    .on("start", dragStarted)
+    .on("drag", draggingCorner1)
+    .on("end", dragEnded);
+
+  const handlerCorner2 = d3
+    .drag<SVGCircleElement, ConstantRegion>()
+    .on("start", dragStarted)
+    .on("drag", draggingCorner2)
+    .on("end", dragEnded);
+  const handlerCorner3 = d3
+    .drag<SVGCircleElement, ConstantRegion>()
+    .on("start", dragStarted)
+    .on("drag", draggingCorner3)
+    .on("end", dragEnded);
+  const handlerCorner4 = d3
+    .drag<SVGCircleElement, ConstantRegion>()
+    .on("start", dragStarted)
+    .on("drag", draggingCorner4)
     .on("end", dragEnded);
 
   useEffect(() => {
@@ -152,7 +325,7 @@ export function StructureViewer(props: StructureViewerContract) {
     // handler(voidRegion);
 
     const point1 = svg
-      .selectAll(".rectPoint1")
+      .selectAll<SVGCircleElement, ConstantRegion>(".rectPoint1")
       .data<ConstantRegion>(props.constantRegions)
       .attr("fill", constants.HONOLULU_BLUE)
       .join("circle")
@@ -162,7 +335,7 @@ export function StructureViewer(props: StructureViewerContract) {
       .attr("r", 7);
 
     const point2 = svg
-      .selectAll(".rectPoint2")
+      .selectAll<SVGCircleElement, ConstantRegion>(".rectPoint2")
       .data<ConstantRegion>(props.constantRegions)
       .attr("fill", constants.HONOLULU_BLUE)
       .join("circle")
@@ -175,7 +348,7 @@ export function StructureViewer(props: StructureViewerContract) {
       .attr("r", 7);
 
     const point3 = svg
-      .selectAll(".rectPoint3")
+      .selectAll<SVGCircleElement, ConstantRegion>(".rectPoint3")
       .data<ConstantRegion>(props.constantRegions)
       .attr("fill", constants.HONOLULU_BLUE)
       .join("circle")
@@ -191,7 +364,7 @@ export function StructureViewer(props: StructureViewerContract) {
       .attr("r", 7);
 
     const point4 = svg
-      .selectAll(".rectPoint4")
+      .selectAll<SVGCircleElement, ConstantRegion>(".rectPoint4")
       .data<ConstantRegion>(props.constantRegions)
       .join("circle")
       .attr("fill", constants.HONOLULU_BLUE)
@@ -204,6 +377,11 @@ export function StructureViewer(props: StructureViewerContract) {
       .attr("r", 7);
 
     handler(constantRegion);
+
+    handlerCorner1(point1);
+    handlerCorner2(point2);
+    handlerCorner3(point3);
+    handlerCorner4(point4);
 
     constantRegion.on("click", () => {});
   }, [props.constantRegions, positionChanged]);
@@ -218,42 +396,12 @@ export function StructureViewer(props: StructureViewerContract) {
       .attr("class", "supports")
       .attr("href", "#support")
       .attr("x", (f: PositionalCondition) => f.position.x * squareSize)
-      .attr("y", (f: PositionalCondition) => f.position.y * squareSize)
-      .call(drag);
+      .attr("y", (f: PositionalCondition) => f.position.y * squareSize);
 
     support.on("click", () => {});
 
     handler(support);
   }, [positionChanged, props.supports]);
-
-  const drag = () => {
-    function dragstarted(event: any) {
-      event.subject.fx = event.subject.x;
-      event.subject.fy = event.subject.y;
-    }
-
-    // Update the subject (dragged node) position during drag.
-    function dragged(event: any, force: any) {
-      force.position.x = event.x / squareSize;
-      force.position.y = event.y / squareSize;
-
-      event.subject.fx = event.x;
-      event.subject.fy = event.y;
-    }
-
-    // Restore the target alpha so the simulation cools after dragging ends.
-    // Unfix the subject position now that it’s no longer being dragged.
-    function dragended(event: any) {
-      event.subject.fx = null;
-      event.subject.fy = null;
-    }
-
-    return d3
-      .drag()
-      .on("start", dragstarted)
-      .on("drag", dragged)
-      .on("end", dragended);
-  };
 
   return (
     <div className={styles.viewer}>
@@ -307,4 +455,12 @@ export function StructureViewer(props: StructureViewerContract) {
       </svg>
     </div>
   );
+}
+
+function isDimensionable(obj: any): obj is Dimensionable {
+  return "dimensions" in obj;
+}
+
+class Corner {
+  constructor() {}
 }

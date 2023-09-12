@@ -1,6 +1,8 @@
 import { createContext } from "react";
 import { Project, defaultProject } from "../../models/project/project.model";
 import { OptimizationContextContract } from "./optimization-context.interface";
+import { eCreationState } from "../../models/enums/eCreationState";
+import { Position } from "../../models/project/position.model";
 
 export const OptimizationContext = createContext<OptimizationContextContract>({
   project: defaultProject,
@@ -10,4 +12,7 @@ export const OptimizationContext = createContext<OptimizationContextContract>({
   volume: 0,
   setTriggerUpdate: (c: number) => {},
   updateProject: (p: Project) => {},
+  creationState: eCreationState.NONE,
+  setCreationState: (ns: eCreationState) => {},
+  createCondition: (pos: Position) => {},
 });

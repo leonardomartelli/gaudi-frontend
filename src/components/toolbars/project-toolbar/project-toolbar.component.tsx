@@ -15,6 +15,7 @@ import { RestartIcon } from "../../icons/restart-icon.component";
 import { StartIcon } from "../../icons/start-icon.component";
 import { MaterialPropertiesIcon } from "../../icons/material-properties-icon.component";
 import { OptimizationContext } from "../../../contexts/optimization-context/optimization-context";
+import { eCreationState } from "../../../models/enums/eCreationState";
 
 export function ProjectToolBar() {
   const inputRef = useRef<HTMLInputElement>(null);
@@ -65,25 +66,33 @@ export function ProjectToolBar() {
         icon={FixedSupportIcon}
         iconColor={constants.ALICE_BLUE}
         label="Criar Suporte Fixo"
-        onClick={() => {}}
+        onClick={() => {
+          context.setCreationState(eCreationState.SUPPORT);
+        }}
       />
       <CommonButton
         icon={ForceIcon}
         iconColor={constants.ALICE_BLUE}
         label="Criar Carga"
-        onClick={() => {}}
+        onClick={() => {
+          context.setCreationState(eCreationState.FORCE);
+        }}
       />
       <CommonButton
         icon={VoidConstantRegionIcon}
         iconColor={constants.ALICE_BLUE}
         label="Criar Vazio Constante"
-        onClick={() => {}}
+        onClick={() => {
+          context.setCreationState(eCreationState.VOID);
+        }}
       />
       <CommonButton
         icon={MaterialConstanRegionIcon}
         iconColor={constants.ALICE_BLUE}
         label="Criar Material Constante"
-        onClick={() => {}}
+        onClick={() => {
+          context.setCreationState(eCreationState.MATERIAL);
+        }}
       />
       <CommonButton
         icon={SeparatorIcon}
