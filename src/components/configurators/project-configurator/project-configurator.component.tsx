@@ -9,6 +9,13 @@ import { Project } from "../../../models/project/project.model";
 export function ProjectConfigurator() {
   let optimizationContext = useContext(OptimizationContext);
 
+  if (
+    optimizationContext.project.boundaryConditions.constantRegions === undefined
+  )
+    optimizationContext.project.boundaryConditions.constantRegions = new Array<
+      ConstantRegion
+    >();
+
   return (
     <div className={styles.project}>
       {/* <BoundaryConditionsViewer /> */}
@@ -24,6 +31,8 @@ export function ProjectConfigurator() {
             ? optimizationContext.project.boundaryConditions.constantRegions
             : Array<ConstantRegion>()
         }
+        creationState={optimizationContext.creationState}
+        setCreationState={optimizationContext.setCreationState}
         triggerUpdate={(target: number) =>
           optimizationContext.setTriggerUpdate(target)
         }
