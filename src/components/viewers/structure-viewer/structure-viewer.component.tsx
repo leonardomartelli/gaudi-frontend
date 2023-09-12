@@ -24,7 +24,7 @@ export function StructureViewer(props: StructureViewerContract) {
 
   const ref = useRef(null);
 
-  const squareSize = viewerHeight / height;
+  const squareSize = Math.round(viewerHeight / height);
 
   const innerPadding = viewerHeight * 0.2;
 
@@ -115,7 +115,10 @@ export function StructureViewer(props: StructureViewerContract) {
   const dragStarted = (event: any, force: PositionalCondition) => {
     deltaX = force.position.x * squareSize - Math.round(event.x);
     deltaY = force.position.y * squareSize - Math.round(event.y);
+       item = event.sourceEvent.target
   };
+
+  let item :any = undefined
 
   const dragging = (event: any, positionalCondition: PositionalCondition) => {
     const x = Math.round((event.x + deltaX) / squareSize);
@@ -141,6 +144,10 @@ export function StructureViewer(props: StructureViewerContract) {
     }
 
     positionalCondition.position = position;
+
+    const selection = d3.select(item);
+
+    selection.attr("x", event.x + deltaX).attr("y", event.y + deltaY);
   };
 
   const draggingCorner1 = (event: any, constantRegion: ConstantRegion) => {
@@ -164,6 +171,10 @@ export function StructureViewer(props: StructureViewerContract) {
     else position.y -= heightChange;
 
     constantRegion.position = position;
+  
+    const selection = d3.select(item);
+
+    selection.attr("x", event.x + deltaX).attr("y", event.y + deltaY);
   };
 
   const draggingCorner2 = (event: any, constantRegion: ConstantRegion) => {
@@ -186,6 +197,9 @@ export function StructureViewer(props: StructureViewerContract) {
     else position.y -= heightChange;
 
     constantRegion.position = position;
+    const selection = d3.select(item);
+
+    selection.attr("x", event.x + deltaX).attr("y", event.y + deltaY);
   };
 
   const draggingCorner3 = (event: any, constantRegion: ConstantRegion) => {
@@ -205,7 +219,10 @@ export function StructureViewer(props: StructureViewerContract) {
 
     if (constantRegion.dimensions.height < 10)
       constantRegion.dimensions.height = 10;
-  };
+      const selection = d3.select(item);
+
+      selection.attr("x", event.x + deltaX).attr("y", event.y + deltaY);
+    };
 
   const draggingCorner4 = (event: any, constantRegion: ConstantRegion) => {
     const x = Math.round(event.x / squareSize);
@@ -227,10 +244,14 @@ export function StructureViewer(props: StructureViewerContract) {
       constantRegion.dimensions.height = 10;
 
     constantRegion.position = position;
+    const selection = d3.select(item);
+
+    selection.attr("x", event.x + deltaX).attr("y", event.y + deltaY);
   };
 
   const dragEnded = (event: any, force: PositionalCondition) => {
     setPositionChanged(positionChanged + 1);
+    item = undefined
   };
 
   const handler = d3
