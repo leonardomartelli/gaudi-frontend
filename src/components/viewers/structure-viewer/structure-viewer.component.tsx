@@ -69,7 +69,7 @@ export function StructureViewer(props: StructureViewerContract) {
       .attr("viewBox", [
         -innerPadding,
         -innerPadding,
-        (viewerHeight / height) * width * (1 + 0.2),
+        (viewerHeight / height) * width * 1.3,
         viewerHeight * 1.3,
       ])
       .attr("width", (viewerHeight / height) * width)
@@ -115,10 +115,10 @@ export function StructureViewer(props: StructureViewerContract) {
   const dragStarted = (event: any, force: PositionalCondition) => {
     deltaX = force.position.x * squareSize - Math.round(event.x);
     deltaY = force.position.y * squareSize - Math.round(event.y);
-       item = event.sourceEvent.target
+    item = event.sourceEvent.target;
   };
 
-  let item :any = undefined
+  let item: any = undefined;
 
   const dragging = (event: any, positionalCondition: PositionalCondition) => {
     const x = Math.round((event.x + deltaX) / squareSize);
@@ -171,7 +171,7 @@ export function StructureViewer(props: StructureViewerContract) {
     else position.y -= heightChange;
 
     constantRegion.position = position;
-  
+
     const selection = d3.select(item);
 
     selection.attr("x", event.x + deltaX).attr("y", event.y + deltaY);
@@ -219,10 +219,10 @@ export function StructureViewer(props: StructureViewerContract) {
 
     if (constantRegion.dimensions.height < 10)
       constantRegion.dimensions.height = 10;
-      const selection = d3.select(item);
+    const selection = d3.select(item);
 
-      selection.attr("x", event.x + deltaX).attr("y", event.y + deltaY);
-    };
+    selection.attr("x", event.x + deltaX).attr("y", event.y + deltaY);
+  };
 
   const draggingCorner4 = (event: any, constantRegion: ConstantRegion) => {
     const x = Math.round(event.x / squareSize);
@@ -251,7 +251,7 @@ export function StructureViewer(props: StructureViewerContract) {
 
   const dragEnded = (event: any, force: PositionalCondition) => {
     setPositionChanged(positionChanged + 1);
-    item = undefined
+    item = undefined;
   };
 
   const handler = d3
