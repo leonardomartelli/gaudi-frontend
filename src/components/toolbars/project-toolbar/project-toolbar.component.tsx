@@ -1,5 +1,5 @@
 import { CommonButton } from "../../buttons/common-button/common-button.component";
-import React, { useContext, useRef } from "react";
+import React, { useContext, useRef, useState } from "react";
 import styles from "./project-toolbar.module.scss";
 import { ArrowDownIcon } from "../../icons/arrow-down-icon.component";
 import constants from "../../../assets/constants";
@@ -16,6 +16,7 @@ import { StartIcon } from "../../icons/start-icon.component";
 import { MaterialPropertiesIcon } from "../../icons/material-properties-icon.component";
 import { OptimizationContext } from "../../../contexts/optimization-context/optimization-context";
 import { eCreationState } from "../../../models/enums/eCreationState";
+import { CommonSlider } from "../../sliders/common-slider/common-slider.component";
 
 export function ProjectToolBar() {
   const inputRef = useRef<HTMLInputElement>(null);
@@ -32,6 +33,15 @@ export function ProjectToolBar() {
     const project = JSON.parse(await file.text());
 
     context.updateProject(project);
+  };
+
+  let [volFrac, setVolFrac] = useState(
+    context.project.domain.volumeFraction * 100
+  );
+
+  const setValue = (val: number) => {
+    context.project.domain.volumeFraction = val / 100;
+    setVolFrac(val);
   };
 
   return (
@@ -113,6 +123,8 @@ export function ProjectToolBar() {
         label="Iniciar Otimização"
         onClick={context.onOptimizationStart}
       />
+
+      <CommonSlider value={volFrac} setValue={setValue} />
     </div>
   );
 }
