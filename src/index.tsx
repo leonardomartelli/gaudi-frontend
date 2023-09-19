@@ -6,8 +6,5 @@ import { GaudiMain } from "./pages/gaudi-main/gaudi-main.component";
 const root = ReactDOM.createRoot(
   document.getElementById("root") as HTMLElement
 );
-root.render(
-  <React.StrictMode>
-    <GaudiMain></GaudiMain>
-  </React.StrictMode>
-);
+
+root.render(<GaudiMain></GaudiMain>);

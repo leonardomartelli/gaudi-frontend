@@ -18,13 +18,14 @@ export function StructureViewer(props: StructureViewerContract) {
   const height = props.height;
   const densities = props.densities;
 
-  const viewerHeight = 800;
-
   let [counter, setCounter] = useState(1);
 
   const ref = useRef(null);
 
-  const squareSize = Math.round(viewerHeight / height);
+  const { innerWidth, innerHeight } = window;
+
+  const squareSize = 12;
+  const viewerHeight = squareSize * height;
 
   const innerPadding = viewerHeight * 0.2;
 
@@ -69,12 +70,12 @@ export function StructureViewer(props: StructureViewerContract) {
       .attr("viewBox", [
         -innerPadding,
         -innerPadding,
-        (viewerHeight / height) * width * 1.3,
+        width * squareSize * 1.3,
         viewerHeight * 1.3,
       ])
-      .attr("width", (viewerHeight / height) * width)
-      .attr("height", viewerHeight)
-      .attr("style", "max-width: 100%; height: auto;");
+      .attr("width", innerWidth)
+      .attr("height", innerHeight * 0.8)
+      .attr("style", "max-width: 100%; max-height: 80%; height: 100%");
 
     function to_id(x: number, y: number) {
       return x * height + y;
