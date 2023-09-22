@@ -482,7 +482,3 @@ export function StructureViewer(props: StructureViewerContract) {
 function isDimensionable(obj: any): obj is Dimensionable {
   return "dimensions" in obj;
 }
-
-class Corner {
-  constructor() {}
-}

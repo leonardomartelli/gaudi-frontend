@@ -69,11 +69,14 @@ export function ProjectToolBar() {
         label="Salvar Projeto"
         onClick={exportProject}
       />
-      <CommonButton
-        icon={SeparatorIcon}
-        iconColor={constants.ALICE_BLUE}
-        onClick={() => {}}
-      />
+      
+      <SeparatorIcon style={
+        {
+          color: constants.ALICE_BLUE,
+          alignSelf: "center",
+          padding: "3%"
+        }}/>
+      
       <CommonButton
         icon={MobileSupportIcon}
         iconColor={constants.ALICE_BLUE}
@@ -112,11 +115,13 @@ export function ProjectToolBar() {
           context.setCreationState(eCreationState.MATERIAL);
         }}
       />
-      <CommonButton
-        icon={SeparatorIcon}
-        iconColor={constants.ALICE_BLUE}
-        onClick={() => {}}
-      />
+
+      <SeparatorIcon style={
+        {
+          color: constants.ALICE_BLUE,
+          alignSelf: "center",
+          padding: "3%"
+        }}/>
 
       <CommonButton
         icon={MaterialPropertiesIcon}
