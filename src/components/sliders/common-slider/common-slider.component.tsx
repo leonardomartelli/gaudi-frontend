@@ -6,7 +6,7 @@ export function CommonSlider(props: {
 }) {
   return (
     <div className={styles.container}>
-      <label>{props.value}%</label> <br />
+      <label className={styles.volume}>{props.value}%</label> <br />
       <input
         type="range"
         className={styles.slider}
@@ -14,7 +14,9 @@ export function CommonSlider(props: {
         onChange={(changeEvent) =>
           props.setValue(Number(changeEvent.target.value))
         }
-      ></input>
+      />
+      <br />
+      <label className={styles.label}>Fração de Volume Máxima</label>
     </div>
   );
 }

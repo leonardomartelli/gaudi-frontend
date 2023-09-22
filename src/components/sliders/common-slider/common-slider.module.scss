@@ -4,14 +4,36 @@
   width: 300px;
   appearance: none;
   background: $alice-blue;
-  flood-color: $davys-gray;
+  accent-color: $honululu-blue;
   cursor: pointer;
   height: 0.5rem;
   border-radius: 4px;
+  margin: 10px;
+}
+
+.slider::-webkit-slider-runnable-track{
+    color: $davys-gray;
 }
 
 .container {
   justify-items: center;
+  justify-content: center;
   align-items: center;
   align-content: center;
+  align-self: center;
+  display: block;
+  color: $alice-blue;
+  text-align: center;
+  padding: 15px;
+}
+
+.label{
+  padding: 3px;
+  font-size: 14pt;
+}
+
+.volume {
+  font-size: 20pt;
+  color: $alice-blue;
+  text-align: center;
 }

@@ -8,16 +8,20 @@
   margin: 15px;
   width: 75px;
   justify-items: center;
+  justify-content: center;
+  justify-self: center;
   height: inherit;
 }
 
 .label {
-  margin: 10%;
+  padding: 20px;
   align-content: start;
+  font-size: 14pt;
 }
 
 .icon {
-  height: 55;
+  height: 60%;
   align-items: center;
   align-self: center;
+  padding: 5px;
 }
