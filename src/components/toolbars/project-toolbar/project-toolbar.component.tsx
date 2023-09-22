@@ -27,7 +27,7 @@ export function ProjectToolBar() {
     inputRef.current!.click();
   };
 
-  const exportProject = () => {};
+  const exportProject = () => {download(JSON.stringify(context.project), `project.json`, "text/plain");};
 
   const onFileLoaded = async (file: File) => {
     const project = JSON.parse(await file.text());
@@ -44,7 +44,13 @@ export function ProjectToolBar() {
     setVolFrac(val);
   };
 
-  const download = () => {};
+  const download = (content : string, fileName:string, contentType:string) => {
+    const a = document.createElement("a");
+    const file = new Blob([content], { type: contentType });
+  a.href = URL.createObjectURL(file);
+  a.download = fileName;
+  a.click();
+};
 
   return (
     <div className={styles.toolbar}>
@@ -61,7 +67,7 @@ export function ProjectToolBar() {
         icon={ArrowDownIcon}
         iconColor={constants.ALICE_BLUE}
         label="Salvar Projeto"
-        onClick={download}
+        onClick={exportProject}
       />
       <CommonButton
         icon={SeparatorIcon}
@@ -119,6 +125,9 @@ export function ProjectToolBar() {
         onClick={() => {}}
       />
 
+      
+      <CommonSlider value={volFrac} setValue={setValue} />
+
       <CommonButton
         icon={StartIcon}
         iconColor={constants.ALICE_BLUE}
@@ -126,7 +135,6 @@ export function ProjectToolBar() {
         onClick={context.onOptimizationStart}
       />
 
-      <CommonSlider value={volFrac} setValue={setValue} />
     </div>
   );
 }
