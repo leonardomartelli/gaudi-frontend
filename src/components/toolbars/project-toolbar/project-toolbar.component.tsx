@@ -44,6 +44,8 @@ export function ProjectToolBar() {
     setVolFrac(val);
   };
 
+  const download = () => {};
+
   return (
     <div className={styles.toolbar}>
       <FileSelection inputReference={inputRef} onFileSelection={onFileLoaded} />
@@ -59,7 +61,7 @@ export function ProjectToolBar() {
         icon={ArrowDownIcon}
         iconColor={constants.ALICE_BLUE}
         label="Salvar Projeto"
-        onClick={() => {}}
+        onClick={download}
       />
       <CommonButton
         icon={SeparatorIcon}

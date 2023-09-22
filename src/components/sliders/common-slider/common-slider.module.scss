@@ -1,0 +1,17 @@
+@import "src/assets/scss/colors.scss";
+
+.slider {
+  width: 300px;
+  appearance: none;
+  background: $alice-blue;
+  flood-color: $davys-gray;
+  cursor: pointer;
+  height: 0.5rem;
+  border-radius: 4px;
+}
+
+.container {
+  justify-items: center;
+  align-items: center;
+  align-content: center;
+}
