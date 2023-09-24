@@ -1,4 +1,4 @@
-import React, { useContext, useEffect, useRef, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import * as d3 from "d3";
 import { StructureViewerContract } from "./structure-viewer.interface";
 import constants from "../../../assets/constants";
@@ -8,7 +8,6 @@ import { Support } from "../../../models/project/support.model";
 import { ConstantRegion } from "../../../models/project/constantRegion.model";
 import { Dimensionable } from "../../../models/project/dimensionsable.model";
 import { PositionalCondition } from "../../../models/project/positionalCondition.model";
-import { OptimizationContext } from "../../../contexts/optimization-context/optimization-context";
 import { eCreationState } from "../../../models/enums/eCreationState";
 import { Position } from "../../../models/project/position.model";
 import { Dimensions } from "../../../models/project/dimensions.model";
@@ -295,20 +294,6 @@ export function StructureViewer(props: StructureViewerContract) {
       .attr("x", (f: PositionalCondition) => f.position.x * squareSize - 15)
       .attr("y", (f: PositionalCondition) => f.position.y * squareSize);
 
-    force.on("click", () => {
-      const datum = force.datum();
-      if (datum.selected == false) {
-        force
-          .datum(datum)
-          .attr("stroke", constants.POPPY)
-          .attr("stroke-width", 3);
-        datum.selected = true;
-      } else {
-        datum.selected = false;
-        force.datum(datum).attr("stroke", "none");
-      }
-    });
-
     handler(force);
   }, [positionChanged, props.forces]);
 
@@ -333,13 +318,13 @@ export function StructureViewer(props: StructureViewerContract) {
       .attr("stroke", (f: PositionalCondition) => {
         const p = f as ConstantRegion;
 
-        return p.type == 0 ? constants.POPPY : constants.ALICE_BLUE;
+        return p.type === 0 ? constants.POPPY : constants.ALICE_BLUE;
       })
       .attr("stroke-width", 3)
       .attr("fill", (f: PositionalCondition) => {
         const p = f as ConstantRegion;
 
-        return p.type == 1 ? constants.POPPY : constants.ALICE_BLUE;
+        return p.type === 1 ? constants.POPPY : constants.ALICE_BLUE;
       })
       .attr("x", (f: PositionalCondition) => f.position.x * squareSize)
       .attr("y", (f: PositionalCondition) => f.position.y * squareSize);

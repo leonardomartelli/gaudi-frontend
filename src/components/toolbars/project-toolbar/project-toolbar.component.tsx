@@ -11,7 +11,6 @@ import { ArrowUpIcon } from "../../icons/arrow-up-icon.component";
 import { FileSelection } from "../../misc/file-selector/file-selection.component";
 import { VoidConstantRegionIcon } from "../../icons/void-constant-region-icon.component";
 import { MaterialConstanRegionIcon } from "../../icons/material-constant-region-icon.component";
-import { RestartIcon } from "../../icons/restart-icon.component";
 import { StartIcon } from "../../icons/start-icon.component";
 import { MaterialPropertiesIcon } from "../../icons/material-properties-icon.component";
 import { OptimizationContext } from "../../../contexts/optimization-context/optimization-context";
@@ -27,12 +26,16 @@ export function ProjectToolBar() {
     inputRef.current!.click();
   };
 
-  const exportProject = () => {download(JSON.stringify(context.project), `project.json`, "text/plain");};
+  const exportProject = () => {
+    download(JSON.stringify(context.project), `project.json`, "text/plain");
+  };
 
   const onFileLoaded = async (file: File) => {
     const project = JSON.parse(await file.text());
 
     context.updateProject(project);
+
+    setVolFrac(project.domain.volumeFraction * 100);
   };
 
   let [volFrac, setVolFrac] = useState(
@@ -44,13 +47,13 @@ export function ProjectToolBar() {
     setVolFrac(val);
   };
 
-  const download = (content : string, fileName:string, contentType:string) => {
+  const download = (content: string, fileName: string, contentType: string) => {
     const a = document.createElement("a");
     const file = new Blob([content], { type: contentType });
-  a.href = URL.createObjectURL(file);
-  a.download = fileName;
-  a.click();
-};
+    a.href = URL.createObjectURL(file);
+    a.download = fileName;
+    a.click();
+  };
 
   return (
     <div className={styles.toolbar}>
@@ -69,14 +72,15 @@ export function ProjectToolBar() {
         label="Salvar Projeto"
         onClick={exportProject}
       />
-      
-      <SeparatorIcon style={
-        {
+
+      <SeparatorIcon
+        style={{
           color: constants.ALICE_BLUE,
           alignSelf: "center",
-          padding: "3%"
-        }}/>
-      
+          padding: "3%",
+        }}
+      />
+
       <CommonButton
         icon={MobileSupportIcon}
         iconColor={constants.ALICE_BLUE}
@@ -116,12 +120,13 @@ export function ProjectToolBar() {
         }}
       />
 
-      <SeparatorIcon style={
-        {
+      <SeparatorIcon
+        style={{
           color: constants.ALICE_BLUE,
           alignSelf: "center",
-          padding: "3%"
-        }}/>
+          padding: "3%",
+        }}
+      />
 
       <CommonButton
         icon={MaterialPropertiesIcon}
@@ -130,7 +135,6 @@ export function ProjectToolBar() {
         onClick={() => {}}
       />
 
-      
       <CommonSlider value={volFrac} setValue={setValue} />
 
       <CommonButton
@@ -139,7 +143,6 @@ export function ProjectToolBar() {
         label="Iniciar Otimização"
         onClick={context.onOptimizationStart}
       />
-
     </div>
   );
 }
