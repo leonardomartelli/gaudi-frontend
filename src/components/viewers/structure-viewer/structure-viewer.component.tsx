@@ -21,15 +21,17 @@ export function StructureViewer(props: StructureViewerContract) {
 
   const ref = useRef(null);
 
-  const { innerWidth, innerHeight } = window;
-
   const squareSize = 12;
   const viewerHeight = squareSize * height;
+  const viewerWidth = squareSize * width;
 
-  const innerPadding = viewerHeight * 0.2;
+  const paddingRate = 0.2;
+  const innerPaddingX = viewerWidth * paddingRate;
+  const innerPaddingY = viewerHeight * paddingRate;
 
   let [creationXPosition, setCreationXPosition] = useState(0);
   let [creationYPosition, setCreationYPosition] = useState(0);
+  let [positionChanged, setPositionChanged] = useState(0);
 
   useEffect(() => {
     const creationPosition = new Position(creationXPosition, creationYPosition);
@@ -60,25 +62,41 @@ export function StructureViewer(props: StructureViewerContract) {
     }
 
     props.setCreationState(eCreationState.NONE);
-  }, [creationXPosition]);
+  }, [creationXPosition, creationYPosition, positionChanged, props]);
 
   useEffect(() => {
+    const svg = d3.select(ref.current);
+    svg
+      .selectAll(".contour")
+      .data<number>(d3.range(1))
+      .join("rect")
+      .attr("class", "contour")
+      .attr("x", "-5")
+      .attr("y", "-5")
+      .attr("width", width * squareSize + 5)
+      .attr("height", height * squareSize + 5)
+      .attr("stroke-width", "10")
+      .attr("fill", "none")
+      .attr("stroke", constants.POPPY);
+  }, [width, height]);
+
+  useEffect(() => {
+    function to_id(x: number, y: number) {
+      return x * height + y;
+    }
+
     const svg = d3.select(ref.current);
 
     svg
       .attr("viewBox", [
-        -innerPadding,
-        -innerPadding,
-        width * squareSize * 1.3,
-        viewerHeight * 1.3,
+        -innerPaddingX,
+        -innerPaddingY,
+        viewerWidth + 2 * innerPaddingX,
+        viewerHeight + 2 * innerPaddingY,
       ])
-      .attr("width", innerWidth)
-      .attr("height", innerHeight * 0.8)
-      .attr("style", "max-width: 100%; max-height: 80%; height: 100%");
-
-    function to_id(x: number, y: number) {
-      return x * height + y;
-    }
+      .attr("width", viewerWidth)
+      .attr("height", viewerHeight)
+      .attr("style", "width: 100%; height: 90%");
 
     const structure = svg
       .selectAll<SVGRectElement, number>(".dens")
@@ -105,9 +123,17 @@ export function StructureViewer(props: StructureViewerContract) {
 
     setCounter(counter + 1);
     props.triggerUpdate(counter);
-  }, [densities]);
-
-  let [positionChanged, setPositionChanged] = useState(0);
+  }, [
+    densities,
+    width,
+    height,
+    innerPaddingX,
+    innerPaddingY,
+    viewerWidth,
+    viewerHeight,
+    counter,
+    props,
+  ]);
 
   let deltaX = 0;
   let deltaY = 0;
@@ -295,7 +321,7 @@ export function StructureViewer(props: StructureViewerContract) {
       .attr("y", (f: PositionalCondition) => f.position.y * squareSize);
 
     handler(force);
-  }, [positionChanged, props.forces]);
+  }, [handler, positionChanged, props.forces]);
 
   useEffect(() => {
     const svg = d3.select(ref.current);
@@ -391,7 +417,15 @@ export function StructureViewer(props: StructureViewerContract) {
     handlerCorner4(point4);
 
     constantRegion.on("click", () => {});
-  }, [props.constantRegions, positionChanged]);
+  }, [
+    props.constantRegions,
+    positionChanged,
+    handler,
+    handlerCorner1,
+    handlerCorner2,
+    handlerCorner3,
+    handlerCorner4,
+  ]);
 
   useEffect(() => {
     const svg = d3.select(ref.current);
@@ -408,7 +442,7 @@ export function StructureViewer(props: StructureViewerContract) {
     support.on("click", () => {});
 
     handler(support);
-  }, [positionChanged, props.supports]);
+  }, [handler, positionChanged, props.supports]);
 
   return (
     <div className={styles.viewer}>

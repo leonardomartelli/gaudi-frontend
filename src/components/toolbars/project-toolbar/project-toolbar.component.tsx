@@ -15,7 +15,7 @@ import { StartIcon } from "../../icons/start-icon.component";
 import { MaterialPropertiesIcon } from "../../icons/material-properties-icon.component";
 import { OptimizationContext } from "../../../contexts/optimization-context/optimization-context";
 import { eCreationState } from "../../../models/enums/eCreationState";
-import { CommonSlider } from "../../sliders/common-slider/common-slider.component";
+import { CommonSlider } from "../../input/common-slider/common-slider.component";
 
 export function ProjectToolBar() {
   const inputRef = useRef<HTMLInputElement>(null);

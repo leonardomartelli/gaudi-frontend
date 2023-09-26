@@ -4,11 +4,6 @@ import OptimizationApi from "../../services/Optimization/apis/OptimizationApi";
 import { Project, defaultProject } from "../../models/project/project.model";
 import { OptimizationContextProviderContract } from "./optimization-context-provider.interface";
 import { eCreationState } from "../../models/enums/eCreationState";
-import { Position } from "../../models/project/position.model";
-import { Force } from "../../models/project/force.model";
-import { Support } from "../../models/project/support.model";
-import { ConstantRegion } from "../../models/project/constantRegion.model";
-import { Dimensions } from "../../models/project/dimensions.model";
 
 export function OptimizationContextProvider(
   props: PropsWithChildren<OptimizationContextProviderContract>
@@ -22,6 +17,9 @@ export function OptimizationContextProvider(
         project.domain.dimensions.width * project.domain.dimensions.height
       ).fill(1)
     );
+
+    setWidth(newProject.domain.dimensions.width);
+    setHeight(newProject.domain.dimensions.height);
   };
 
   let [densities, setDensitites] = useState<Array<number>>(
@@ -67,41 +65,20 @@ export function OptimizationContextProvider(
     };
 
     fetchResult().catch(console.error);
-  }, [triggerUpdate]);
+  }, [optimizationIdentifier, triggerUpdate]);
 
-  const createCondition = (position: Position) => {
-    switch (creationState) {
-      case eCreationState.FORCE:
-        project.boundaryConditions.forces.push(new Force(-1, 1, position));
-        break;
-      case eCreationState.SUPPORT:
-        project.boundaryConditions.supports.push(
-          new Support(position, 0, undefined)
-        );
-        break;
-      case eCreationState.VOID:
-        if (project.boundaryConditions.constantRegions === undefined)
-          project.boundaryConditions.constantRegions =
-            new Array<ConstantRegion>();
+  const [height, setHeight] = useState(project.domain.dimensions.height);
 
-        project.boundaryConditions.constantRegions.push(
-          new ConstantRegion(position, new Dimensions(10, 10), 0)
-        );
-        break;
-      case eCreationState.MATERIAL:
-        if (project.boundaryConditions.constantRegions === undefined)
-          project.boundaryConditions.constantRegions =
-            new Array<ConstantRegion>();
+  const configureHeight = (newHeight: number) => {
+    setHeight(newHeight);
+    project.domain.dimensions.height = newHeight;
+  };
 
-        project.boundaryConditions.constantRegions.push(
-          new ConstantRegion(position, new Dimensions(10, 10), 1)
-        );
-        break;
-      default:
-        break;
-    }
+  const [width, setWidth] = useState(project.domain.dimensions.width);
 
-    // setCreationState(eCreationState.NONE);
+  const configureWidth = (newWidth: number) => {
+    setWidth(newWidth);
+    project.domain.dimensions.width = newWidth;
   };
 
   const getInitialValue = () => {
@@ -115,7 +92,10 @@ export function OptimizationContextProvider(
       setTriggerUpdate: setTriggerUpdate,
       creationState: creationState,
       setCreationState: setCreationState,
-      createCondition: createCondition,
+      width: width,
+      configureWidth: configureWidth,
+      height: height,
+      configureHeight: configureHeight,
     };
   };
 

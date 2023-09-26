@@ -1,5 +1,4 @@
 import { eCreationState } from "../../models/enums/eCreationState";
-import { Position } from "../../models/project/position.model";
 import { Project } from "../../models/project/project.model";
 
 export interface OptimizationContextContract {
@@ -12,5 +11,8 @@ export interface OptimizationContextContract {
   updateProject: (newProject: Project) => void;
   creationState: eCreationState;
   setCreationState: (newState: eCreationState) => void;
-  createCondition: (position: Position) => void;
+  width: number;
+  height: number;
+  configureWidth: (nW: number) => void;
+  configureHeight: (nH: number) => void;
 }

@@ -1,9 +1,10 @@
-import React, { useContext } from "react";
+import React, { useContext, useState } from "react";
 import { DesignVariablesViewer } from "../design-variables-viewer/design-variables-viewer.component";
 import styles from "./project-viewer.module.scss";
 import { OptimizationContext } from "../../../contexts/optimization-context/optimization-context";
 import { ConstantRegion } from "../../../models/project/constantRegion.model";
 import { StructureViewer } from "../structure-viewer/structure-viewer.component";
+import { DomainConfigurator } from "../../configurators/domain-configurator/domain-configurator.component";
 
 export function ProjectViewer() {
   let optimizationContext = useContext(OptimizationContext);
@@ -17,8 +18,8 @@ export function ProjectViewer() {
   return (
     <div className={styles.project}>
       <StructureViewer
-        width={optimizationContext.project.domain.dimensions.width}
-        height={optimizationContext.project.domain.dimensions.height}
+        width={optimizationContext.width}
+        height={optimizationContext.height}
         densities={optimizationContext.densities}
         forces={optimizationContext.project.boundaryConditions.forces}
         supports={optimizationContext.project.boundaryConditions.supports}
@@ -33,10 +34,20 @@ export function ProjectViewer() {
           optimizationContext.setTriggerUpdate(target)
         }
       />
-      <DesignVariablesViewer
-        objective={optimizationContext.objective}
-        volume={optimizationContext.volume}
-      />
+
+      <div className={styles.rightSide}>
+        <DomainConfigurator
+          width={optimizationContext.width}
+          height={optimizationContext.height}
+          configureWidth={optimizationContext.configureWidth}
+          configureHeight={optimizationContext.configureHeight}
+        />
+
+        <DesignVariablesViewer
+          objective={optimizationContext.objective}
+          volume={optimizationContext.volume}
+        />
+      </div>
     </div>
   );
 }

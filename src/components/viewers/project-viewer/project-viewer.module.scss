@@ -7,3 +7,12 @@
   background-color: $alice-blue;
   height: calc(100% - 220px);
 }
+
+.rightSide {
+  align-items: center;
+  display: grid;
+  align-content: center;
+  justify-items: center;
+  width: 100%;
+  background-color: $alice-blue;
+}

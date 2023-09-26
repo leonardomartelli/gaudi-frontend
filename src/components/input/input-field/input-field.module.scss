@@ -1,0 +1,18 @@
+@import "src/assets/scss/colors.scss";
+
+.container {
+  justify-items: end;
+}
+
+.input {
+  background-color: $honululu-blue;
+  color: $alice-blue;
+  font-size: 14pt;
+  text-align: start;
+}
+
+.label {
+  font-size: 14pt;
+  padding: 2%;
+  text-align: end;
+}
