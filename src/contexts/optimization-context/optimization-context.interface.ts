@@ -15,4 +15,6 @@ export interface OptimizationContextContract {
   height: number;
   configureWidth: (nW: number) => void;
   configureHeight: (nH: number) => void;
+  configureVolumeFraction: (nV: number) => void;
+  volumeFraction: number;
 }

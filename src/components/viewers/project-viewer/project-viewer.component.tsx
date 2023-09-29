@@ -1,4 +1,4 @@
-import React, { useContext, useState } from "react";
+import React, { useContext } from "react";
 import { DesignVariablesViewer } from "../design-variables-viewer/design-variables-viewer.component";
 import styles from "./project-viewer.module.scss";
 import { OptimizationContext } from "../../../contexts/optimization-context/optimization-context";

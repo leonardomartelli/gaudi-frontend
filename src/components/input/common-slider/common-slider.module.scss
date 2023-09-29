@@ -4,15 +4,14 @@
   width: 300px;
   appearance: none;
   background: $alice-blue;
-  accent-color: $honululu-blue;
+  accent-color: $poppy;
   cursor: pointer;
   height: 0.5rem;
   border-radius: 4px;
-  margin: 10px;
 }
 
-.slider::-webkit-slider-runnable-track{
-    color: $davys-gray;
+.slider::-webkit-slider-runnable-track {
+  color: $davys-gray;
 }
 
 .container {
@@ -24,11 +23,10 @@
   display: block;
   color: $alice-blue;
   text-align: center;
-  padding: 15px;
 }
 
-.label{
-  padding: 3px;
+.label {
+  padding: 6%;
   font-size: 14pt;
 }
 

@@ -1,18 +1,27 @@
 @import "src/assets/scss/colors.scss";
 
 .container {
-  justify-items: end;
+  justify-items: center;
+  display: block;
+  align-content: center;
+  align-self: center;
+  justify-self: center;
+  padding-top: 2%;
 }
 
 .input {
-  background-color: $honululu-blue;
-  color: $alice-blue;
+  background-color: $alice-blue;
+  color: $honululu-blue;
   font-size: 14pt;
-  text-align: start;
+  border-radius: 20px;
+  text-align: center;
+  border-color: none;
+  border-style: none;
 }
 
 .label {
   font-size: 14pt;
-  padding: 2%;
-  text-align: end;
+  text-align: center;
+  align-self: center;
+  text-indent: none;
 }

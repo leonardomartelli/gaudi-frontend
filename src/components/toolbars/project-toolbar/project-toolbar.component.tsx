@@ -35,16 +35,7 @@ export function ProjectToolBar() {
 
     context.updateProject(project);
 
-    setVolFrac(project.domain.volumeFraction * 100);
-  };
-
-  let [volFrac, setVolFrac] = useState(
-    context.project.domain.volumeFraction * 100
-  );
-
-  const setValue = (val: number) => {
-    context.project.domain.volumeFraction = val / 100;
-    setVolFrac(val);
+    context.configureVolumeFraction(project.domain.volumeFraction * 100);
   };
 
   const download = (content: string, fileName: string, contentType: string) => {
@@ -127,15 +118,6 @@ export function ProjectToolBar() {
           padding: "3%",
         }}
       />
-
-      <CommonButton
-        icon={MaterialPropertiesIcon}
-        iconColor={constants.ALICE_BLUE}
-        label="Editar Propriedades Materiais"
-        onClick={() => {}}
-      />
-
-      <CommonSlider value={volFrac} setValue={setValue} />
 
       <CommonButton
         icon={StartIcon}

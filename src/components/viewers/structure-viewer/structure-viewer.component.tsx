@@ -66,22 +66,15 @@ export function StructureViewer(props: StructureViewerContract) {
 
   useEffect(() => {
     const svg = d3.select(ref.current);
-
-    const structureGroup = svg
-      .selectChild(".structure")
-      .data<number>(d3.range(1))
-      .join("g")
-      .attr("class", "structure");
-
-    structureGroup
+    svg
       .selectAll(".contour")
       .data<number>(d3.range(1))
       .join("rect")
       .attr("class", "contour")
       .attr("x", "-5")
       .attr("y", "-5")
-      .attr("width", width * squareSize + 5)
-      .attr("height", height * squareSize + 5)
+      .attr("width", width * squareSize + 10)
+      .attr("height", height * squareSize + 10)
       .attr("stroke-width", "10")
       .attr("fill", "none")
       .attr("stroke", constants.POPPY);
@@ -94,12 +87,6 @@ export function StructureViewer(props: StructureViewerContract) {
 
     const svg = d3.select(ref.current);
 
-    const structureGroup = svg
-      .selectAll(".structure")
-      .data<number>(d3.range(1))
-      .join("g")
-      .attr("class", "structure");
-
     svg
       .attr("viewBox", [
         -innerPaddingX,
@@ -111,7 +98,7 @@ export function StructureViewer(props: StructureViewerContract) {
       .attr("height", viewerHeight)
       .attr("style", "width: 100%; height: 90%");
 
-    const structure = structureGroup
+    const structure = svg
       .selectAll<SVGRectElement, number>(".dens")
       .data<number>(d3.range(height * width))
       .join("rect")
@@ -136,7 +123,6 @@ export function StructureViewer(props: StructureViewerContract) {
 
     setCounter(counter + 1);
     props.triggerUpdate(counter);
-    setPositionChanged(positionChanged + 1);
   }, [
     densities,
     width,
@@ -145,8 +131,6 @@ export function StructureViewer(props: StructureViewerContract) {
     innerPaddingY,
     viewerWidth,
     viewerHeight,
-    counter,
-    props,
     positionChanged,
   ]);
 
@@ -326,35 +310,24 @@ export function StructureViewer(props: StructureViewerContract) {
   useEffect(() => {
     const svg = d3.select(ref.current);
 
-    const boundaryConditionsGroup = svg
-      .selectAll(".bc")
-      .data<number>(d3.range(1))
-      .join("g")
-      .attr("class", "bc");
-
-    const force = boundaryConditionsGroup
+    const force = svg
       .selectAll<SVGElement, Force>(".forces")
       .data<PositionalCondition>(props.forces)
       .join("use")
       .attr("class", "forces")
-      .attr("href", "#icon")
+      .attr("href", "#force")
       .attr("x", (f: PositionalCondition) => f.position.x * squareSize - 15)
       .attr("y", (f: PositionalCondition) => f.position.y * squareSize);
 
-    boundaryConditionsGroup.raise();
+    force.raise();
+
     handler(force);
   }, [handler, positionChanged, props.forces]);
 
   useEffect(() => {
     const svg = d3.select(ref.current);
 
-    const boundaryConditionsGroup = svg
-      .selectAll(".bc")
-      .data<number>(d3.range(1))
-      .join("g")
-      .attr("class", "bc");
-
-    const constantRegion = boundaryConditionsGroup
+    const constantRegion = svg
       .selectAll<SVGElement, ConstantRegion>(".constant")
       .data<PositionalCondition>(props.constantRegions)
       .join("rect")
@@ -374,7 +347,7 @@ export function StructureViewer(props: StructureViewerContract) {
 
         return p.type === 0 ? constants.POPPY : constants.ALICE_BLUE;
       })
-      .attr("stroke-width", 3)
+      .attr("stroke-width", 7.5)
       .attr("fill", (f: PositionalCondition) => {
         const p = f as ConstantRegion;
 
@@ -383,9 +356,7 @@ export function StructureViewer(props: StructureViewerContract) {
       .attr("x", (f: PositionalCondition) => f.position.x * squareSize)
       .attr("y", (f: PositionalCondition) => f.position.y * squareSize);
 
-    // handler(voidRegion);
-
-    const point1 = boundaryConditionsGroup
+    const point1 = svg
       .selectAll<SVGCircleElement, ConstantRegion>(".rectPoint1")
       .data<ConstantRegion>(props.constantRegions)
       .attr("fill", constants.HONOLULU_BLUE)
@@ -393,9 +364,9 @@ export function StructureViewer(props: StructureViewerContract) {
       .attr("class", "rectPoint1")
       .attr("cx", (f: ConstantRegion) => f.position.x * squareSize)
       .attr("cy", (f: ConstantRegion) => f.position.y * squareSize)
-      .attr("r", 7);
+      .attr("r", 15);
 
-    const point2 = boundaryConditionsGroup
+    const point2 = svg
       .selectAll<SVGCircleElement, ConstantRegion>(".rectPoint2")
       .data<ConstantRegion>(props.constantRegions)
       .attr("fill", constants.HONOLULU_BLUE)
@@ -406,9 +377,9 @@ export function StructureViewer(props: StructureViewerContract) {
         (f: ConstantRegion) => (f.position.x + f.dimensions.width) * squareSize
       )
       .attr("cy", (f: ConstantRegion) => f.position.y * squareSize)
-      .attr("r", 7);
+      .attr("r", 15);
 
-    const point3 = boundaryConditionsGroup
+    const point3 = svg
       .selectAll<SVGCircleElement, ConstantRegion>(".rectPoint3")
       .data<ConstantRegion>(props.constantRegions)
       .attr("fill", constants.HONOLULU_BLUE)
@@ -422,9 +393,9 @@ export function StructureViewer(props: StructureViewerContract) {
         "cy",
         (f: ConstantRegion) => (f.position.y + f.dimensions.height) * squareSize
       )
-      .attr("r", 7);
+      .attr("r", 15);
 
-    const point4 = boundaryConditionsGroup
+    const point4 = svg
       .selectAll<SVGCircleElement, ConstantRegion>(".rectPoint4")
       .data<ConstantRegion>(props.constantRegions)
       .join("circle")
@@ -435,9 +406,13 @@ export function StructureViewer(props: StructureViewerContract) {
         "cy",
         (f: ConstantRegion) => (f.position.y + f.dimensions.height) * squareSize
       )
-      .attr("r", 7);
+      .attr("r", 15);
 
-    boundaryConditionsGroup.raise();
+    constantRegion.raise();
+    point1.raise();
+    point2.raise();
+    point3.raise();
+    point4.raise();
 
     handler(constantRegion);
 
@@ -445,8 +420,6 @@ export function StructureViewer(props: StructureViewerContract) {
     handlerCorner2(point2);
     handlerCorner3(point3);
     handlerCorner4(point4);
-
-    constantRegion.on("click", () => {});
   }, [
     props.constantRegions,
     positionChanged,
@@ -460,13 +433,7 @@ export function StructureViewer(props: StructureViewerContract) {
   useEffect(() => {
     const svg = d3.select(ref.current);
 
-    const boundaryConditionsGroup = svg
-      .selectAll(".bc")
-      .data<number>(d3.range(1))
-      .join("g")
-      .attr("class", "bc");
-
-    const support = boundaryConditionsGroup
+    const support = svg
       .selectAll<SVGElement, Support>(".supports")
       .data<PositionalCondition>(props.supports)
       .join("use")
@@ -475,7 +442,7 @@ export function StructureViewer(props: StructureViewerContract) {
       .attr("x", (f: PositionalCondition) => f.position.x * squareSize)
       .attr("y", (f: PositionalCondition) => f.position.y * squareSize);
 
-    boundaryConditionsGroup.raise();
+    support.raise();
 
     handler(support);
   }, [handler, positionChanged, props.supports]);
@@ -484,7 +451,7 @@ export function StructureViewer(props: StructureViewerContract) {
     <div className={styles.viewer}>
       <svg ref={ref}>
         <defs>
-          <g id="icon" transform="scale(2.0)">
+          <g id="force" transform={"scale(2.5)"}>
             <path
               d="M8 55L0.205772 37L15.7942 37L8 55Z"
               fill={constants.HONOLULU_BLUE}
@@ -500,9 +467,9 @@ export function StructureViewer(props: StructureViewerContract) {
           </g>
           <g
             id="support"
-            transform="scale(2.0) rotate(90)"
             fill={constants.ALICE_BLUE}
             fillOpacity={0}
+            transform={"scale(2.5) rotate(90)"}
           >
             <path
               d="m -16,43 4.6278,10"

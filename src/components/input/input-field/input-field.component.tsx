@@ -7,7 +7,7 @@ export function InputField(props: {
 }) {
   return (
     <div className={styles.container}>
-      <label className={styles.label}>{props.label}:</label>
+      <label className={styles.label}>{props.label}</label> <br />
       <input
         className={styles.input}
         type="number"

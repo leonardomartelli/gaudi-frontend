@@ -15,7 +15,7 @@ export function OptimizationContextProvider(
     setDensitites(
       Array(
         project.domain.dimensions.width * project.domain.dimensions.height
-      ).fill(1)
+      ).fill(project.domain.materialProperties.density)
     );
 
     setWidth(newProject.domain.dimensions.width);
@@ -42,11 +42,11 @@ export function OptimizationContextProvider(
   const onOptimizationStart = async () => {
     setOptimizationIdentifier(await OptimizationApi.startOptimization(project));
 
-    setDensitites(
-      Array(
-        project.domain.dimensions.width * project.domain.dimensions.height
-      ).fill(1)
-    );
+    // setDensitites(
+    //   Array(
+    //     project.domain.dimensions.width * project.domain.dimensions.height
+    //   ).fill(1)
+    // );
   };
 
   useEffect(() => {
@@ -61,6 +61,7 @@ export function OptimizationContextProvider(
         setVolume(result.volume);
       } else {
         OptimizationApi.terminateOptimization(optimizationIdentifier);
+        setOptimizationIdentifier("");
       }
     };
 
@@ -81,6 +82,15 @@ export function OptimizationContextProvider(
     project.domain.dimensions.width = newWidth;
   };
 
+  let [volumeFraction, setVolumeFraction] = useState(
+    project.domain.volumeFraction * 100
+  );
+
+  const configureVolumeFraction = (val: number) => {
+    project.domain.volumeFraction = val / 100;
+    setVolumeFraction(val);
+  };
+
   const getInitialValue = () => {
     return {
       densities: densities,
@@ -96,6 +106,8 @@ export function OptimizationContextProvider(
       configureWidth: configureWidth,
       height: height,
       configureHeight: configureHeight,
+      volumeFraction: volumeFraction,
+      configureVolumeFraction: configureVolumeFraction,
     };
   };
 

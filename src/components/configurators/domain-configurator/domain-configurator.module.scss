@@ -1,16 +1,27 @@
 @import "src/assets/scss/colors.scss";
 
 .configurator {
-  width: 60%;
-  display: inline;
-  align-items: start;
-  background-color: $honululu-blue;
   color: $alice-blue;
   align-self: center;
-  margin: 5%;
+  // margin: 5%;
   text-align: center;
   font-size: 16pt;
   list-style-type: disc;
-  text-indent: 12px;
-  padding: 15pt;
+  padding: 5%;
+}
+
+.configurationFields {
+  display: flex;
+  width: 100%;
+  align-items: center;
+  justify-content: center;
+  justify-items: center;
+  align-content: center;
+}
+
+.completeConfiguration {
+  background-color: $honululu-blue;
+  width: 60%;
+  margin: 2%;
+  padding: 2%;
 }
