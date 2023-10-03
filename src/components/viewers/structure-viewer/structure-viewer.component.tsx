@@ -121,8 +121,14 @@ export function StructureViewer(props: StructureViewerContract) {
       setCreationYPosition(Math.round(y / squareSize));
     });
 
-    setCounter(counter + 1);
-    props.triggerUpdate(counter);
+    structure.on("end", (event: any) => {
+      setPositionChanged(positionChanged + 1);
+    });
+
+    if (props.optimizationIdentifier !== "") {
+      setCounter(counter + 1);
+      props.triggerUpdate(counter);
+    }
   }, [
     densities,
     width,
@@ -131,7 +137,9 @@ export function StructureViewer(props: StructureViewerContract) {
     innerPaddingY,
     viewerWidth,
     viewerHeight,
+    counter,
     positionChanged,
+    props,
   ]);
 
   let deltaX = 0;
@@ -161,18 +169,24 @@ export function StructureViewer(props: StructureViewerContract) {
       objectin.setPosition(x, y, props.width, props.height);
 
       position = objectin.position;
+
+      positionalCondition.position = position;
+
+      rerenderConstantRegion(positionalCondition as ConstantRegion);
     } else {
       const objectin = new Force(0, 0, positionalCondition.position);
       objectin.setPosition(x, y, props.width, props.height);
 
       position = objectin.position;
+
+      positionalCondition.position = position;
+
+      const selection = d3.select(item);
+
+      selection
+        .attr("x", position.x * squareSize)
+        .attr("y", position.y * squareSize);
     }
-
-    positionalCondition.position = position;
-
-    const selection = d3.select(item);
-
-    selection.attr("x", event.x + deltaX).attr("y", event.y + deltaY);
   };
 
   const draggingCorner1 = (event: any, constantRegion: ConstantRegion) => {
@@ -199,7 +213,8 @@ export function StructureViewer(props: StructureViewerContract) {
 
     const selection = d3.select(item);
 
-    selection.attr("x", event.x + deltaX).attr("y", event.y + deltaY);
+    selection.attr("cx", event.x).attr("cy", event.y);
+    rerenderConstantRegion(constantRegion);
   };
 
   const draggingCorner2 = (event: any, constantRegion: ConstantRegion) => {
@@ -224,7 +239,8 @@ export function StructureViewer(props: StructureViewerContract) {
     constantRegion.position = position;
     const selection = d3.select(item);
 
-    selection.attr("x", event.x + deltaX).attr("y", event.y + deltaY);
+    selection.attr("cx", event.x).attr("cy", event.y);
+    rerenderConstantRegion(constantRegion);
   };
 
   const draggingCorner3 = (event: any, constantRegion: ConstantRegion) => {
@@ -246,7 +262,9 @@ export function StructureViewer(props: StructureViewerContract) {
       constantRegion.dimensions.height = 10;
     const selection = d3.select(item);
 
-    selection.attr("x", event.x + deltaX).attr("y", event.y + deltaY);
+    selection.attr("cx", event.x).attr("cy", event.y);
+
+    rerenderConstantRegion(constantRegion);
   };
 
   const draggingCorner4 = (event: any, constantRegion: ConstantRegion) => {
@@ -271,7 +289,9 @@ export function StructureViewer(props: StructureViewerContract) {
     constantRegion.position = position;
     const selection = d3.select(item);
 
-    selection.attr("x", event.x + deltaX).attr("y", event.y + deltaY);
+    selection.attr("cx", event.x).attr("cy", event.y);
+
+    rerenderConstantRegion(constantRegion);
   };
 
   const dragEnded = (event: any, force: PositionalCondition) => {
@@ -334,7 +354,6 @@ export function StructureViewer(props: StructureViewerContract) {
       .attr("class", "constant")
       .attr("width", (f: PositionalCondition) => {
         const p = f as ConstantRegion;
-
         return p.dimensions.width * squareSize;
       })
       .attr("height", (f: PositionalCondition) => {
@@ -354,7 +373,12 @@ export function StructureViewer(props: StructureViewerContract) {
         return p.type === 1 ? constants.POPPY : constants.ALICE_BLUE;
       })
       .attr("x", (f: PositionalCondition) => f.position.x * squareSize)
-      .attr("y", (f: PositionalCondition) => f.position.y * squareSize);
+      .attr("y", (f: PositionalCondition) => f.position.y * squareSize)
+      .attr(
+        "id",
+        (cr: PositionalCondition) =>
+          `cr${props.constantRegions.indexOf(cr as ConstantRegion)}`
+      );
 
     const point1 = svg
       .selectAll<SVGCircleElement, ConstantRegion>(".rectPoint1")
@@ -364,7 +388,12 @@ export function StructureViewer(props: StructureViewerContract) {
       .attr("class", "rectPoint1")
       .attr("cx", (f: ConstantRegion) => f.position.x * squareSize)
       .attr("cy", (f: ConstantRegion) => f.position.y * squareSize)
-      .attr("r", 15);
+      .attr("r", 15)
+      .attr(
+        "id",
+        (cr: PositionalCondition) =>
+          `cr${props.constantRegions.indexOf(cr as ConstantRegion)}p1`
+      );
 
     const point2 = svg
       .selectAll<SVGCircleElement, ConstantRegion>(".rectPoint2")
@@ -377,7 +406,12 @@ export function StructureViewer(props: StructureViewerContract) {
         (f: ConstantRegion) => (f.position.x + f.dimensions.width) * squareSize
       )
       .attr("cy", (f: ConstantRegion) => f.position.y * squareSize)
-      .attr("r", 15);
+      .attr("r", 15)
+      .attr(
+        "id",
+        (cr: PositionalCondition) =>
+          `cr${props.constantRegions.indexOf(cr as ConstantRegion)}p2`
+      );
 
     const point3 = svg
       .selectAll<SVGCircleElement, ConstantRegion>(".rectPoint3")
@@ -393,7 +427,12 @@ export function StructureViewer(props: StructureViewerContract) {
         "cy",
         (f: ConstantRegion) => (f.position.y + f.dimensions.height) * squareSize
       )
-      .attr("r", 15);
+      .attr("r", 15)
+      .attr(
+        "id",
+        (cr: PositionalCondition) =>
+          `cr${props.constantRegions.indexOf(cr as ConstantRegion)}p3`
+      );
 
     const point4 = svg
       .selectAll<SVGCircleElement, ConstantRegion>(".rectPoint4")
@@ -406,7 +445,12 @@ export function StructureViewer(props: StructureViewerContract) {
         "cy",
         (f: ConstantRegion) => (f.position.y + f.dimensions.height) * squareSize
       )
-      .attr("r", 15);
+      .attr("r", 15)
+      .attr(
+        "id",
+        (cr: PositionalCondition) =>
+          `cr${props.constantRegions.indexOf(cr as ConstantRegion)}p4`
+      );
 
     constantRegion.raise();
     point1.raise();
@@ -499,6 +543,68 @@ export function StructureViewer(props: StructureViewerContract) {
       </svg>
     </div>
   );
+
+  function rerenderConstantRegion(constantRegion: ConstantRegion) {
+    const svg = d3.select(ref.current);
+
+    const regionElement = svg.select(
+      `#cr${props.constantRegions.indexOf(constantRegion)}`
+    );
+
+    regionElement
+      .attr("x", constantRegion.position.x * squareSize)
+      .attr("y", constantRegion.position.y * squareSize)
+      .attr("width", constantRegion.dimensions.width * squareSize)
+      .attr("height", constantRegion.dimensions.height * squareSize);
+
+    const point1 = svg.select(
+      `#cr${props.constantRegions.indexOf(constantRegion)}p1`
+    );
+
+    point1
+      .attr("cx", constantRegion.position.x * squareSize)
+      .attr("cy", constantRegion.position.y * squareSize);
+
+    const point2 = svg.select(
+      `#cr${props.constantRegions.indexOf(constantRegion)}p2`
+    );
+
+    point2
+      .attr(
+        "cx",
+        (constantRegion.position.x + constantRegion.dimensions.width) *
+          squareSize
+      )
+      .attr("cy", constantRegion.position.y * squareSize);
+
+    const point3 = svg.select(
+      `#cr${props.constantRegions.indexOf(constantRegion)}p3`
+    );
+
+    point3
+      .attr(
+        "cx",
+        (constantRegion.position.x + constantRegion.dimensions.width) *
+          squareSize
+      )
+      .attr(
+        "cy",
+        (constantRegion.position.y + constantRegion.dimensions.height) *
+          squareSize
+      );
+
+    const point4 = svg.select(
+      `#cr${props.constantRegions.indexOf(constantRegion)}p4`
+    );
+
+    point4
+      .attr("cx", constantRegion.position.x * squareSize)
+      .attr(
+        "cy",
+        (constantRegion.position.y + constantRegion.dimensions.height) *
+          squareSize
+      );
+  }
 }
 
 function isDimensionable(obj: any): obj is Dimensionable {

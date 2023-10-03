@@ -1,18 +1,26 @@
 @import "src/assets/scss/colors.scss";
 
 .variables {
-  width: 60%;
-  display: inline;
-  align-items: start;
-  background-color: $honululu-blue;
+  width: 100%;
   color: $alice-blue;
-  align-self: center;
   text-align: center;
   font-size: 16pt;
-  list-style-type: disc;
-  text-indent: 12px;
-  margin: 2%;
+  height: 10%;
+  display: inline-flex;
+  align-self: center;
+  align-items: center;
+}
+
+.container {
+  background-color: $honululu-blue;
+  width: 60%;
+  height: 100%;
   padding: 2%;
+  display: grid;
+  align-content: center;
+  justify-content: center;
+  align-items: center;
+  justify-items: center;
 }
 
 .label {

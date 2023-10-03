@@ -5,6 +5,7 @@ import { Support } from "../../../models/project/support.model";
 import { CommonComponentContract } from "../../components.interface";
 
 export interface StructureViewerContract extends CommonComponentContract {
+  optimizationIdentifier: string;
   densities: Array<number>;
   forces: Array<Force>;
   supports: Array<Support>;
