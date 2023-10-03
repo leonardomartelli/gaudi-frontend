@@ -39,14 +39,14 @@ export function OptimizationContextProvider(
     eCreationState.NONE
   );
 
+  const [objectives, setObjectives] = useState<number[]>([]);
+  const [volumes, setVolumes] = useState<number[]>([]);
+
   const onOptimizationStart = async () => {
     setOptimizationIdentifier(await OptimizationApi.startOptimization(project));
 
-    // setDensitites(
-    //   Array(
-    //     project.domain.dimensions.width * project.domain.dimensions.height
-    //   ).fill(1)
-    // );
+    setObjectives([]);
+    setVolumes([]);
   };
 
   useEffect(() => {
@@ -59,6 +59,8 @@ export function OptimizationContextProvider(
         setDensitites(result.densities);
         setObjective(result.objective);
         setVolume(result.volume);
+        objectives.push(result.objective);
+        volumes.push(result.volume);
       } else {
         OptimizationApi.terminateOptimization(optimizationIdentifier);
         setOptimizationIdentifier("");
@@ -66,7 +68,7 @@ export function OptimizationContextProvider(
     };
 
     fetchResult().catch(console.error);
-  }, [optimizationIdentifier, triggerUpdate]);
+  }, [objectives, optimizationIdentifier, triggerUpdate, volumes]);
 
   const [height, setHeight] = useState(project.domain.dimensions.height);
 
@@ -108,6 +110,9 @@ export function OptimizationContextProvider(
       configureHeight: configureHeight,
       volumeFraction: volumeFraction,
       configureVolumeFraction: configureVolumeFraction,
+      objectives: objectives,
+      volumes: volumes,
+      optimizationIdentifier: optimizationIdentifier,
     };
   };
 

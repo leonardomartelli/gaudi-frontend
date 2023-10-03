@@ -90,7 +90,6 @@ export function DomainConfigurator(props: {
         value={optimizationContext.volumeFraction}
         setValue={optimizationContext.configureVolumeFraction}
       />
-      ;
     </div>
   );
 }

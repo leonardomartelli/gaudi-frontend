@@ -19,4 +19,7 @@ export const OptimizationContext = createContext<OptimizationContextContract>({
   configureHeight: (nH: number) => {},
   configureVolumeFraction: (nv: number) => {},
   volumeFraction: defaultProject.domain.volumeFraction,
+  volumes: [0],
+  objectives: [0],
+  optimizationIdentifier: "",
 });

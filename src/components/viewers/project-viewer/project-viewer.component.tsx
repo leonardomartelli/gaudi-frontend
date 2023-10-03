@@ -33,6 +33,7 @@ export function ProjectViewer() {
         triggerUpdate={(target: number) =>
           optimizationContext.setTriggerUpdate(target)
         }
+        optimizationIdentifier={optimizationContext.optimizationIdentifier}
       />
 
       <div className={styles.rightSide}>
@@ -46,6 +47,8 @@ export function ProjectViewer() {
         <DesignVariablesViewer
           objective={optimizationContext.objective}
           volume={optimizationContext.volume}
+          objectives={optimizationContext.objectives}
+          volumes={optimizationContext.volumes}
         />
       </div>
     </div>

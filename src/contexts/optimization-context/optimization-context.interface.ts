@@ -2,6 +2,7 @@ import { eCreationState } from "../../models/enums/eCreationState";
 import { Project } from "../../models/project/project.model";
 
 export interface OptimizationContextContract {
+  optimizationIdentifier: string;
   project: Project;
   onOptimizationStart: () => void;
   densities: Array<number>;
@@ -17,4 +18,6 @@ export interface OptimizationContextContract {
   configureHeight: (nH: number) => void;
   configureVolumeFraction: (nV: number) => void;
   volumeFraction: number;
+  volumes: Array<number>;
+  objectives: Array<number>;
 }
