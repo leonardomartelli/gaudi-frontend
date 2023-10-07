@@ -22,4 +22,5 @@ export const OptimizationContext = createContext<OptimizationContextContract>({
   volumes: [0],
   objectives: [0],
   optimizationIdentifier: "",
+  removeSupport: (id: number) => {},
 });

@@ -38,22 +38,36 @@ export function StructureViewer(props: StructureViewerContract) {
 
     switch (props.creationState) {
       case eCreationState.FORCE:
-        props.forces.push(new Force(-1, 1, creationPosition));
+        props.forces.push(
+          new Force(-1, 1, creationPosition, undefined, props.forces.length)
+        );
         setPositionChanged(positionChanged + 1);
         break;
       case eCreationState.SUPPORT:
-        props.supports.push(new Support(creationPosition, 0, undefined));
+        props.supports.push(
+          new Support(creationPosition, 0, undefined, props.supports.length)
+        );
         setPositionChanged(positionChanged + 1);
         break;
       case eCreationState.VOID:
         props.constantRegions.push(
-          new ConstantRegion(creationPosition, new Dimensions(10, 10), 0)
+          new ConstantRegion(
+            creationPosition,
+            new Dimensions(10, 10),
+            0,
+            props.constantRegions.length
+          )
         );
         setPositionChanged(positionChanged + 1);
         break;
       case eCreationState.MATERIAL:
         props.constantRegions.push(
-          new ConstantRegion(creationPosition, new Dimensions(10, 10), 1)
+          new ConstantRegion(
+            creationPosition,
+            new Dimensions(10, 10),
+            1,
+            props.constantRegions.length
+          )
         );
         setPositionChanged(positionChanged + 1);
         break;
@@ -121,9 +135,7 @@ export function StructureViewer(props: StructureViewerContract) {
       setCreationYPosition(Math.round(y / squareSize));
     });
 
-    structure.on("end", (event: any) => {
-      setPositionChanged(positionChanged + 1);
-    });
+    // svg.selectAll("use").raise();
 
     if (props.optimizationIdentifier !== "") {
       setCounter(counter + 1);
@@ -145,13 +157,13 @@ export function StructureViewer(props: StructureViewerContract) {
   let deltaX = 0;
   let deltaY = 0;
 
+  let item: any = undefined;
+
   const dragStarted = (event: any, force: PositionalCondition) => {
     deltaX = force.position.x * squareSize - Math.round(event.x);
     deltaY = force.position.y * squareSize - Math.round(event.y);
     item = event.sourceEvent.target;
   };
-
-  let item: any = undefined;
 
   const dragging = (event: any, positionalCondition: PositionalCondition) => {
     const x = Math.round((event.x + deltaX) / squareSize);
@@ -337,9 +349,25 @@ export function StructureViewer(props: StructureViewerContract) {
       .attr("class", "forces")
       .attr("href", "#force")
       .attr("x", (f: PositionalCondition) => f.position.x * squareSize - 15)
-      .attr("y", (f: PositionalCondition) => f.position.y * squareSize);
+      .attr("y", (f: PositionalCondition) => f.position.y * squareSize)
+      .attr("id", (f: PositionalCondition) => `f${f.id}`);
 
-    force.raise();
+    //force.raise();
+
+    force.on("click", (event: any) => {
+      const datum = force.datum();
+
+      if (datum.selected === false) {
+        force
+          .selectAll(`#f${datum.id}`)
+          .attr("stroke", constants.POPPY)
+          .attr("stroke-width", 3);
+        datum.selected = true;
+      } else {
+        datum.selected = false;
+        force.selectAll(`#f${datum.id}`).attr("stroke", "none");
+      }
+    });
 
     handler(force);
   }, [handler, positionChanged, props.forces]);
@@ -374,11 +402,7 @@ export function StructureViewer(props: StructureViewerContract) {
       })
       .attr("x", (f: PositionalCondition) => f.position.x * squareSize)
       .attr("y", (f: PositionalCondition) => f.position.y * squareSize)
-      .attr(
-        "id",
-        (cr: PositionalCondition) =>
-          `cr${props.constantRegions.indexOf(cr as ConstantRegion)}`
-      );
+      .attr("id", (cr: PositionalCondition) => `cr${cr.id}`);
 
     const point1 = svg
       .selectAll<SVGCircleElement, ConstantRegion>(".rectPoint1")
@@ -389,11 +413,7 @@ export function StructureViewer(props: StructureViewerContract) {
       .attr("cx", (f: ConstantRegion) => f.position.x * squareSize)
       .attr("cy", (f: ConstantRegion) => f.position.y * squareSize)
       .attr("r", 15)
-      .attr(
-        "id",
-        (cr: PositionalCondition) =>
-          `cr${props.constantRegions.indexOf(cr as ConstantRegion)}p1`
-      );
+      .attr("id", (cr: PositionalCondition) => `cr${cr.id}p1`);
 
     const point2 = svg
       .selectAll<SVGCircleElement, ConstantRegion>(".rectPoint2")
@@ -407,11 +427,7 @@ export function StructureViewer(props: StructureViewerContract) {
       )
       .attr("cy", (f: ConstantRegion) => f.position.y * squareSize)
       .attr("r", 15)
-      .attr(
-        "id",
-        (cr: PositionalCondition) =>
-          `cr${props.constantRegions.indexOf(cr as ConstantRegion)}p2`
-      );
+      .attr("id", (cr: PositionalCondition) => `cr${cr.id}p2`);
 
     const point3 = svg
       .selectAll<SVGCircleElement, ConstantRegion>(".rectPoint3")
@@ -428,11 +444,7 @@ export function StructureViewer(props: StructureViewerContract) {
         (f: ConstantRegion) => (f.position.y + f.dimensions.height) * squareSize
       )
       .attr("r", 15)
-      .attr(
-        "id",
-        (cr: PositionalCondition) =>
-          `cr${props.constantRegions.indexOf(cr as ConstantRegion)}p3`
-      );
+      .attr("id", (cr: PositionalCondition) => `cr${cr.id}p3`);
 
     const point4 = svg
       .selectAll<SVGCircleElement, ConstantRegion>(".rectPoint4")
@@ -446,11 +458,7 @@ export function StructureViewer(props: StructureViewerContract) {
         (f: ConstantRegion) => (f.position.y + f.dimensions.height) * squareSize
       )
       .attr("r", 15)
-      .attr(
-        "id",
-        (cr: PositionalCondition) =>
-          `cr${props.constantRegions.indexOf(cr as ConstantRegion)}p4`
-      );
+      .attr("id", (cr: PositionalCondition) => `cr${cr.id}p4`);
 
     constantRegion.raise();
     point1.raise();
@@ -482,12 +490,22 @@ export function StructureViewer(props: StructureViewerContract) {
       .data<PositionalCondition>(props.supports)
       .join("use")
       .attr("class", "supports")
+      .attr("id", (f: PositionalCondition) => `sup${f.id}`)
       .attr("href", "#support")
       .attr("x", (f: PositionalCondition) => f.position.x * squareSize)
       .attr("y", (f: PositionalCondition) => f.position.y * squareSize);
 
-    support.raise();
+    support.on("click", (event: any) => {
+      if (event.shiftKey) {
+        const datum = support.datum();
 
+        props.removeSupport(datum.id ?? event.target.x);
+
+        setPositionChanged(positionChanged + 1);
+      }
+    });
+
+    // support.raise();
     handler(support);
   }, [handler, positionChanged, props.supports]);
 
@@ -547,9 +565,7 @@ export function StructureViewer(props: StructureViewerContract) {
   function rerenderConstantRegion(constantRegion: ConstantRegion) {
     const svg = d3.select(ref.current);
 
-    const regionElement = svg.select(
-      `#cr${props.constantRegions.indexOf(constantRegion)}`
-    );
+    const regionElement = svg.select(`#cr${constantRegion.id}`);
 
     regionElement
       .attr("x", constantRegion.position.x * squareSize)
@@ -557,17 +573,13 @@ export function StructureViewer(props: StructureViewerContract) {
       .attr("width", constantRegion.dimensions.width * squareSize)
       .attr("height", constantRegion.dimensions.height * squareSize);
 
-    const point1 = svg.select(
-      `#cr${props.constantRegions.indexOf(constantRegion)}p1`
-    );
+    const point1 = svg.select(`#cr${constantRegion.id}p1`);
 
     point1
       .attr("cx", constantRegion.position.x * squareSize)
       .attr("cy", constantRegion.position.y * squareSize);
 
-    const point2 = svg.select(
-      `#cr${props.constantRegions.indexOf(constantRegion)}p2`
-    );
+    const point2 = svg.select(`#cr${constantRegion.id}p2`);
 
     point2
       .attr(
@@ -577,9 +589,7 @@ export function StructureViewer(props: StructureViewerContract) {
       )
       .attr("cy", constantRegion.position.y * squareSize);
 
-    const point3 = svg.select(
-      `#cr${props.constantRegions.indexOf(constantRegion)}p3`
-    );
+    const point3 = svg.select(`#cr${constantRegion.id}p3`);
 
     point3
       .attr(
@@ -593,9 +603,7 @@ export function StructureViewer(props: StructureViewerContract) {
           squareSize
       );
 
-    const point4 = svg.select(
-      `#cr${props.constantRegions.indexOf(constantRegion)}p4`
-    );
+    const point4 = svg.select(`#cr${constantRegion.id}p4`);
 
     point4
       .attr("cx", constantRegion.position.x * squareSize)
@@ -608,5 +616,9 @@ export function StructureViewer(props: StructureViewerContract) {
 }
 
 function isDimensionable(obj: any): obj is Dimensionable {
-  return "dimensions" in obj;
+  return (
+    "dimensions" in obj &&
+    obj.dimensions &&
+    obj.dimensions.width + obj.dimensions.height > 0
+  );
 }

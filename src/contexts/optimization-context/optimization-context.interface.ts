@@ -2,6 +2,7 @@ import { eCreationState } from "../../models/enums/eCreationState";
 import { Project } from "../../models/project/project.model";
 
 export interface OptimizationContextContract {
+  removeSupport: (id: number) => void;
   optimizationIdentifier: string;
   project: Project;
   onOptimizationStart: () => void;

@@ -14,6 +14,13 @@ export class BoundaryConditions {
   ) {
     this.supports = supports;
     this.forces = forces;
-    this.constantRegions = constantRegions;
+
+    if (constantRegions) {
+      this.constantRegions = constantRegions;
+      this.constantRegions.forEach((r, i, a) => (r.id = i));
+    }
+
+    this.supports.forEach((r, i, a) => (r.id = i));
+    this.forces.forEach((r, i, a) => (r.id = i));
   }
 }

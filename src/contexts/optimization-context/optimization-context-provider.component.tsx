@@ -93,6 +93,11 @@ export function OptimizationContextProvider(
     setVolumeFraction(val);
   };
 
+  const removeSupport = (id: number) => {
+    project.boundaryConditions.supports =
+      project.boundaryConditions.supports.filter((sup) => sup.id !== id);
+  };
+
   const getInitialValue = () => {
     return {
       densities: densities,
@@ -113,6 +118,7 @@ export function OptimizationContextProvider(
       objectives: objectives,
       volumes: volumes,
       optimizationIdentifier: optimizationIdentifier,
+      removeSupport: removeSupport,
     };
   };
 

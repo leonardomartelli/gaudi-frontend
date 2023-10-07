@@ -34,22 +34,27 @@ export function ProjectViewer() {
           optimizationContext.setTriggerUpdate(target)
         }
         optimizationIdentifier={optimizationContext.optimizationIdentifier}
+        removeSupport={optimizationContext.removeSupport}
       />
 
       <div className={styles.rightSide}>
-        <DomainConfigurator
-          width={optimizationContext.width}
-          height={optimizationContext.height}
-          configureWidth={optimizationContext.configureWidth}
-          configureHeight={optimizationContext.configureHeight}
-        />
+        <div className={styles.half}>
+          <DomainConfigurator
+            width={optimizationContext.width}
+            height={optimizationContext.height}
+            configureWidth={optimizationContext.configureWidth}
+            configureHeight={optimizationContext.configureHeight}
+          />
+        </div>
 
-        <DesignVariablesViewer
-          objective={optimizationContext.objective}
-          volume={optimizationContext.volume}
-          objectives={optimizationContext.objectives}
-          volumes={optimizationContext.volumes}
-        />
+        <div className={styles.half}>
+          <DesignVariablesViewer
+            objective={optimizationContext.objective}
+            volume={optimizationContext.volume}
+            objectives={optimizationContext.objectives}
+            volumes={optimizationContext.volumes}
+          />
+        </div>
       </div>
     </div>
   );

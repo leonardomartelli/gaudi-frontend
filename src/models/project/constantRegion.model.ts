@@ -7,11 +7,18 @@ export class ConstantRegion implements PositionalCondition, Dimensionable {
   position: Position;
   dimensions: Dimensions;
   type: number;
+  id: number;
 
-  constructor(position: Position, dimensions: Dimensions, type: number) {
+  constructor(
+    position: Position,
+    dimensions: Dimensions,
+    type: number,
+    id?: number
+  ) {
     this.position = position;
     this.dimensions = dimensions;
     this.type = type;
+    this.id = id ?? 0;
   }
   setPosition(x: number, y: number, maxX: number, maxY: number): void {
     if (x < 0) this.position.x = 0;

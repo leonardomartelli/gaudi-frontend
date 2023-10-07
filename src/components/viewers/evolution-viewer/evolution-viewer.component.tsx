@@ -8,104 +8,176 @@ import styles from "./evolution-viewer.module.scss";
 export function EvolutionViewer(props: EvolutionViewerContract) {
   const ref = useRef(null);
 
-  const margin = { top: 5, right: 5, bottom: 5, left: 5 },
-    width = 450 - margin.left - margin.right,
+  const margin = { top: 10, right: 10, bottom: 10, left: 10 },
+    width = 550 - margin.left - margin.right,
     height = 370 - margin.top - margin.bottom;
 
   const svg = d3.select(ref.current);
 
   const context = useContext(OptimizationContext);
 
-  svg
-    .attr("viewBox", [0, 0, width, height])
-    .attr("fill", constants.ALICE_BLUE)
-    .attr("style", "width: 100%; height: 100%");
+  svg.attr("viewBox", [-60, -40, width + 120, height + 60]);
 
   useEffect(() => {
     const maxVol = context.width * context.height;
     const volumes: [number, number][] = [];
+    const objectives: [number, number][] = [];
 
     for (let i = 0; i < context.volumes.length; i++)
       volumes.push([i, context.volumes[i]]);
 
-    const x = d3.scaleLinear(
-      [0, context.volumes.length],
-      [margin.left, width - margin.right]
-    );
+    for (let i = 0; i < context.objectives.length; i++)
+      objectives.push([i, context.objectives[i]]);
 
-    const max = context.volumes.reduce((a, b) => {
-      return Math.max(a, b);
-    }, 0);
+    const { x, volumeY, volumeLine } = getVolumeLine(volumes, maxVol);
 
-    const y = d3.scaleLinear([0, max], [height - margin.bottom, margin.top]);
+    const { objectiveY, objectiveLine } = getObjectiveLine(objectives);
 
-    const line = d3
-      .line()
-      .x(
-        (d: [number, number]) => (d[0] / volumes[volumes.length - 1][0]) * width
-      )
-      .y((d: [number, number]) => (d[1] / maxVol) * height);
+    svg.selectAll("g").remove();
 
     svg
-      .selectAll(".xAx")
-      .data(d3.range(1))
-      .join("g")
-      .attr("class", "xAx")
+      .append("g")
       .attr("transform", `translate(0,${height - margin.bottom})`)
-      .call((g) => {
-        d3.axisBottom(x)
+      .call(
+        d3
+          .axisBottom(x)
           .ticks(width / 80)
-          .tickSizeOuter(0);
-      });
+          .tickSizeOuter(0)
+      );
+
+    // Add the y-axis, remove the domain line, add grid lines and a label.
+
+    const axisFontSize = "18pt";
+    const axisStrokeOpacity = 0.5;
+    const axisStrokeWidth = "2px";
 
     svg
-      .selectAll(".volume")
-      .data(d3.range(1))
-      .join("g")
+      .append("g")
       .attr("transform", `translate(${margin.left},0)`)
-      .attr("class", "volume")
-      .call((g) => d3.axisLeft(y).ticks(height / 40))
+      .attr("color", constants.POPPY)
+      .call(d3.axisLeft(volumeY).ticks(height / 40))
       .call((g) => g.select(".domain").remove())
-      .call((g) =>
-        g
-          .selectAll(".tick line")
+      .call((g) => {
+        g.selectAll(".tick line")
           .clone()
           .attr("x2", width - margin.left - margin.right)
-          .attr("stroke-opacity", 0.1)
-      )
+          .attr("stroke-opacity", 0.5)
+          .attr("stroke-width", axisStrokeWidth);
+
+        g.selectAll("text").attr("font-size", "12pt");
+      })
       .call((g) =>
         g
-          .selectAll("text")
-          .join("text")
-          .attr("x", -margin.left)
-          .attr("y", 10)
-          .attr("fill", "currentColor")
-          .attr("text-anchor", "start")
+          .append("text")
+          .attr("transform", "rotate(-90)")
+          .attr("y", -margin.left * 5)
+          .attr("x", -(height - margin.bottom - margin.top) / 2)
+          .attr("fill", constants.POPPY)
+          .attr("font-size", axisFontSize)
+          .attr("text-anchor", "center")
           .text("Volume")
       );
 
     svg
-      .selectAll(".line")
+      .append("g")
+      .attr("transform", `translate(${width - margin.right},0)`)
+      .attr("color", constants.ALICE_BLUE)
+      .call(d3.axisRight(objectiveY).ticks(height / 40))
+      .call((g) => g.select(".domain").remove())
+      .call((g) => {
+        g.selectAll(".tick line")
+          .clone()
+          .attr("x2", -width + margin.left + margin.right)
+          .attr("stroke-opacity", axisStrokeOpacity)
+          .attr("stroke-width", axisStrokeWidth);
+
+        g.selectAll("text").attr("font-size", "12pt");
+      })
+      .call((g) =>
+        g
+          .append("text")
+          .attr("transform", "rotate(90)")
+          .attr("y", -margin.left * 5)
+          .attr("x", (height - margin.bottom - margin.top) / 2)
+          .attr("fill", constants.ALICE_BLUE)
+          .attr("font-size", axisFontSize)
+          .attr("text-anchor", "center")
+          .text("Objetivo")
+      );
+
+    svg
+      .selectAll(".volLine")
       .data(d3.range(1))
       .join("path")
       .attr("fill", "none")
-      .attr("class", "line")
-      .attr("stroke", "black")
-      .attr("stroke-width", 1.5)
-      .attr("d", line(volumes));
+      .attr("class", "volLine")
+      .attr("stroke", constants.POPPY)
+      .attr("stroke-width", 4)
+      .attr("d", volumeLine(volumes));
+
+    svg
+      .selectAll(".objLine")
+      .data(d3.range(1))
+      .join("path")
+      .attr("fill", "none")
+      .attr("class", "objLine")
+      .attr("stroke", constants.ALICE_BLUE)
+      .attr("stroke-width", 4)
+      .attr("d", objectiveLine(objectives));
+
+    function getVolumeLine(volumes: [number, number][], maxVol: number) {
+      const x = d3.scaleLinear(
+        [0, context.volumes.length],
+        [margin.left, width - margin.right]
+      );
+
+      const volumeY = d3.scaleLinear(
+        [0, maxVol],
+        [height - margin.bottom, margin.top]
+      );
+
+      const volumeLine = d3
+        .line()
+        .x((d: [number, number]) => x(d[0]))
+        .y((d: [number, number]) => volumeY(d[1]));
+
+      return { x, volumeY, volumeLine };
+    }
+
+    function getObjectiveLine(objectives: [number, number][]) {
+      const x = d3.scaleLinear(
+        [0, context.volumes.length],
+        [margin.left, width - margin.right]
+      );
+
+      const max = context.objectives.reduce((a, b) => {
+        return Math.max(a, b);
+      }, 0);
+
+      const objectiveY = d3.scaleLinear(
+        [0, max],
+        [height - margin.bottom, margin.top]
+      );
+
+      const objectiveLine = d3
+        .line()
+        .x((d: [number, number]) => x(d[0]))
+        .y((d: [number, number]) => objectiveY(d[1]));
+
+      return { objectiveY, objectiveLine };
+    }
   }, [
+    context.width,
+    context.height,
+    context.volumes,
+    context.objectives,
+    svg,
     height,
     margin.bottom,
     margin.left,
     margin.right,
-    margin.top,
-    props.objectives.length,
-    context.volumes,
-    context.volumes.length,
-    svg,
     width,
-    context.width,
-    context.height,
+    margin.top,
   ]);
 
   return (

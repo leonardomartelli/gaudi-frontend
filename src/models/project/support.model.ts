@@ -7,15 +7,18 @@ export class Support implements PositionalCondition, Dimensionable {
   dimensions: Dimensions;
   type: number;
   position: Position;
+  id: number;
 
   constructor(
     position: Position,
     type: number,
-    dimensions: Dimensions | undefined
+    dimensions: Dimensions | undefined,
+    id?: number
   ) {
     this.position = position;
     this.dimensions = dimensions ?? new Dimensions(0, 0);
     this.type = type;
+    this.id = id ?? 0;
   }
 
   setPosition(x: number, y: number, maxX: number, maxY: number) {
