@@ -165,40 +165,63 @@ export function StructureViewer(props: StructureViewerContract) {
     item = event.sourceEvent.target;
   };
 
-  const dragging = (event: any, positionalCondition: PositionalCondition) => {
+  const draggingForce = (event: any, force: Force) => {
     const x = Math.round((event.x + deltaX) / squareSize);
     const y = Math.round((event.y + deltaY) / squareSize);
 
-    let position = positionalCondition.position;
+    const newForce = new Force(
+      force.load,
+      force.orientation,
+      force.position,
+      force.size,
+      force.id
+    );
 
-    if (isDimensionable(positionalCondition)) {
-      const objectin = new ConstantRegion(
-        positionalCondition.position,
-        positionalCondition.dimensions,
-        0
-      );
+    newForce.setPosition(x, y, props.width, props.height);
+    const selection = d3.select(item);
 
-      objectin.setPosition(x, y, props.width, props.height);
+    selection
+      .attr("x", newForce.position.x * squareSize)
+      .attr("y", newForce.position.y * squareSize);
+  };
 
-      position = objectin.position;
+  const draggingSupport = (event: any, support: Support) => {
+    const x = Math.round((event.x + deltaX) / squareSize);
+    const y = Math.round((event.y + deltaY) / squareSize);
 
-      positionalCondition.position = position;
+    const newSupport = new Support(
+      support.position,
+      support.type,
+      support.dimensions,
+      support.id
+    );
 
-      rerenderConstantRegion(positionalCondition as ConstantRegion);
-    } else {
-      const objectin = new Force(0, 0, positionalCondition.position);
-      objectin.setPosition(x, y, props.width, props.height);
+    newSupport.setPosition(x, y, props.width, props.height);
 
-      position = objectin.position;
+    support.position = newSupport.position;
 
-      positionalCondition.position = position;
+    rerenderSupport(support);
+  };
 
-      const selection = d3.select(item);
+  const draggingConstantRegion = (
+    event: any,
+    constantRegion: ConstantRegion
+  ) => {
+    const x = Math.round((event.x + deltaX) / squareSize);
+    const y = Math.round((event.y + deltaY) / squareSize);
 
-      selection
-        .attr("x", position.x * squareSize)
-        .attr("y", position.y * squareSize);
-    }
+    const newConstantRegion = new ConstantRegion(
+      constantRegion.position,
+      constantRegion.dimensions,
+      constantRegion.type,
+      constantRegion.id
+    );
+
+    newConstantRegion.setPosition(x, y, props.width, props.height);
+
+    constantRegion.position = newConstantRegion.position;
+
+    rerenderConstantRegion(constantRegion);
   };
 
   const draggingCorner1 = (event: any, constantRegion: ConstantRegion) => {
@@ -311,10 +334,92 @@ export function StructureViewer(props: StructureViewerContract) {
     item = undefined;
   };
 
-  const handler = d3
-    .drag<SVGElement, PositionalCondition>()
+  const draggingLeftSupport = (event: any, leftSupport: Support) => {
+    const x = Math.round(event.x / squareSize);
+    const y = Math.round(event.y / squareSize);
+
+    console.log(y);
+
+    const newSupport = new Support(
+      leftSupport.position,
+      leftSupport.type,
+      leftSupport.dimensions,
+      leftSupport.id
+    );
+
+    let positionX = leftSupport.position.x;
+    let positionY = leftSupport.position.y;
+
+    let widthChange = positionX - x;
+    let heightChange = positionY - y;
+
+    if (isDimensionable(leftSupport)) {
+      leftSupport.dimensions.width += widthChange;
+      leftSupport.dimensions.height += heightChange;
+
+      if (leftSupport.dimensions.width < 1) leftSupport.dimensions.width = 1;
+      else positionX -= widthChange;
+
+      if (leftSupport.dimensions.height < 1) leftSupport.dimensions.height = 1;
+      else positionY -= heightChange;
+    } else {
+      positionX -= widthChange;
+      positionY -= heightChange;
+    }
+
+    newSupport.setPosition(positionX, positionY, width, height);
+
+    leftSupport.position = newSupport.position;
+
+    rerenderSupport(leftSupport);
+  };
+
+  const draggingRightSupport = (event: any, rightSupport: Support) => {
+    const x = Math.round(event.x / squareSize);
+    const y = Math.round(event.y / squareSize);
+    let position = rightSupport.position;
+
+    var widthChange = position.x + rightSupport.dimensions.width - x;
+    var heightChange = position.y + rightSupport.dimensions.height - y;
+
+    rightSupport.dimensions.width -= widthChange;
+    rightSupport.dimensions.height -= heightChange;
+
+    if (rightSupport.dimensions.width < 1) rightSupport.dimensions.width = 1;
+
+    if (rightSupport.dimensions.height < 1) rightSupport.dimensions.height = 1;
+
+    rerenderSupport(rightSupport);
+  };
+
+  const forceHandler = d3
+    .drag<SVGElement, Force>()
     .on("start", dragStarted)
-    .on("drag", dragging)
+    .on("drag", draggingForce)
+    .on("end", dragEnded);
+
+  const constantRegionHandler = d3
+    .drag<SVGElement, ConstantRegion>()
+    .on("start", dragStarted)
+    .on("drag", draggingConstantRegion)
+    .on("end", dragEnded);
+
+  const supportRectangleHandler = d3
+    .drag<SVGElement, Support>()
+    .on("start", dragStarted)
+    .on("drag", draggingSupport)
+    .on("end", dragEnded);
+
+  const leftSupportHandler = d3
+    .drag<SVGElement, Support>()
+    .on("start", dragStarted)
+    .on("drag", draggingLeftSupport)
+    .on("end", dragEnded);
+
+  const rightSupportHandler = d3
+    .drag<SVGElement, Support>()
+    .on("start", dragStarted)
+    .on("drag", draggingRightSupport)
     .on("end", dragEnded);
 
   const handlerCorner1 = d3
@@ -344,13 +449,13 @@ export function StructureViewer(props: StructureViewerContract) {
 
     const force = svg
       .selectAll<SVGElement, Force>(".forces")
-      .data<PositionalCondition>(props.forces)
+      .data<Force>(props.forces)
       .join("use")
       .attr("class", "forces")
       .attr("href", "#force")
-      .attr("x", (f: PositionalCondition) => f.position.x * squareSize - 15)
-      .attr("y", (f: PositionalCondition) => f.position.y * squareSize)
-      .attr("id", (f: PositionalCondition) => `f${f.id}`);
+      .attr("x", (f: Force) => f.position.x * squareSize - 15)
+      .attr("y", (f: Force) => f.position.y * squareSize)
+      .attr("id", (f: Force) => `f${f.id}`);
 
     //force.raise();
 
@@ -369,40 +474,36 @@ export function StructureViewer(props: StructureViewerContract) {
       }
     });
 
-    handler(force);
-  }, [handler, positionChanged, props.forces]);
+    forceHandler(force);
+  }, [forceHandler, positionChanged, props.forces]);
 
   useEffect(() => {
     const svg = d3.select(ref.current);
 
     const constantRegion = svg
       .selectAll<SVGElement, ConstantRegion>(".constant")
-      .data<PositionalCondition>(props.constantRegions)
+      .data<ConstantRegion>(props.constantRegions)
       .join("rect")
       .attr("class", "constant")
-      .attr("width", (f: PositionalCondition) => {
+      .attr("width", (f: ConstantRegion) => {
         const p = f as ConstantRegion;
         return p.dimensions.width * squareSize;
       })
-      .attr("height", (f: PositionalCondition) => {
+      .attr("height", (f: ConstantRegion) => {
         const p = f as ConstantRegion;
 
         return p.dimensions.height * squareSize;
       })
-      .attr("stroke", (f: PositionalCondition) => {
-        const p = f as ConstantRegion;
-
-        return p.type === 0 ? constants.POPPY : constants.ALICE_BLUE;
-      })
+      .attr("stroke", (p: ConstantRegion) =>
+        p.type === 0 ? constants.POPPY : constants.ALICE_BLUE
+      )
       .attr("stroke-width", 7.5)
-      .attr("fill", (f: PositionalCondition) => {
-        const p = f as ConstantRegion;
-
-        return p.type === 1 ? constants.POPPY : constants.ALICE_BLUE;
-      })
-      .attr("x", (f: PositionalCondition) => f.position.x * squareSize)
-      .attr("y", (f: PositionalCondition) => f.position.y * squareSize)
-      .attr("id", (cr: PositionalCondition) => `cr${cr.id}`);
+      .attr("fill", (p: ConstantRegion) =>
+        p.type === 1 ? constants.POPPY : constants.ALICE_BLUE
+      )
+      .attr("x", (f: ConstantRegion) => f.position.x * squareSize)
+      .attr("y", (f: ConstantRegion) => f.position.y * squareSize)
+      .attr("id", (cr: ConstantRegion) => `cr${cr.id}`);
 
     const point1 = svg
       .selectAll<SVGCircleElement, ConstantRegion>(".rectPoint1")
@@ -466,7 +567,7 @@ export function StructureViewer(props: StructureViewerContract) {
     point3.raise();
     point4.raise();
 
-    handler(constantRegion);
+    constantRegionHandler(constantRegion);
 
     handlerCorner1(point1);
     handlerCorner2(point2);
@@ -475,7 +576,7 @@ export function StructureViewer(props: StructureViewerContract) {
   }, [
     props.constantRegions,
     positionChanged,
-    handler,
+    constantRegionHandler,
     handlerCorner1,
     handlerCorner2,
     handlerCorner3,
@@ -485,29 +586,80 @@ export function StructureViewer(props: StructureViewerContract) {
   useEffect(() => {
     const svg = d3.select(ref.current);
 
-    const support = svg
-      .selectAll<SVGElement, Support>(".supports")
-      .data<PositionalCondition>(props.supports)
+    const rectangle = svg
+      .selectAll<SVGElement, Support>(".supportRectangle")
+      .data<Support>(props.supports)
+      .join("rect")
+      .attr("class", "supportRectangle")
+      .attr("id", (f: Support) => `srect${f.id}`)
+      .attr("x", (f: Support) => f.position.x * squareSize)
+      .attr("y", (f: Support) => f.position.y * squareSize)
+      .attr("width", (f: Support) => (f.dimensions?.width ?? 1) * squareSize)
+      .attr("height", (f: Support) => (f.dimensions?.height ?? 1) * squareSize)
+      .attr("stroke", constants.HONOLULU_BLUE)
+      .attr("stroke-width", 10)
+      .attr("fill", constants.HONOLULU_BLUE)
+      .attr("fill-opacity", 0.6)
+      .style("visibility", (f: Support) =>
+        isDimensionable(f) ? "visible" : "hidden"
+      );
+    supportRectangleHandler(rectangle);
+
+    const firstSupport = svg
+      .selectAll<SVGElement, Support>(".leftSupport")
+      .data<Support>(props.supports)
       .join("use")
-      .attr("class", "supports")
-      .attr("id", (f: PositionalCondition) => `sup${f.id}`)
+      .attr("class", "leftSupport")
+      .attr("id", (f: Support) => `sl${f.id}`)
       .attr("href", "#support")
-      .attr("x", (f: PositionalCondition) => f.position.x * squareSize)
-      .attr("y", (f: PositionalCondition) => f.position.y * squareSize);
+      .attr("x", (f: Support) => f.position.x * squareSize)
+      .attr("y", (f: Support) => f.position.y * squareSize);
 
-    support.on("click", (event: any) => {
-      if (event.shiftKey) {
-        const datum = support.datum();
+    leftSupportHandler(firstSupport);
 
-        props.removeSupport(datum.id ?? event.target.x);
+    const secondSupport = svg
+      .selectAll<SVGElement, Support>(".rightSupport")
+      .data<Support>(props.supports)
+      .join("use")
+      .attr("class", "rightSupport")
+      .attr("id", (f: Support) => `sr${f.id}`)
+      .attr("href", "#supportInverted")
+      .attr(
+        "x",
+        (sup: Support) =>
+          (sup.position.x + (sup.dimensions?.width ?? 1)) * squareSize
+      )
+      .attr(
+        "y",
+        (sup: Support) =>
+          (sup.position.y + (sup.dimensions?.height ?? 1)) * squareSize
+      )
+      .attr(
+        "style",
+        (f: Support) =>
+          `visibility:${isDimensionable(f) ? "visible" : "hidden"}`
+      );
 
-        setPositionChanged(positionChanged + 1);
-      }
-    });
+    rightSupportHandler(secondSupport);
+
+    // support.on("click", (event: any) => {
+    //   if (event.shiftKey) {
+    //     const datum = support.datum();
+
+    //     props.removeSupport(datum.id ?? event.target.x);
+
+    //     setPositionChanged(positionChanged + 1);
+    //   }
+    // });
 
     // support.raise();
-    handler(support);
-  }, [handler, positionChanged, props.supports]);
+  }, [
+    leftSupportHandler,
+    positionChanged,
+    props.supports,
+    rightSupportHandler,
+    supportRectangleHandler,
+  ]);
 
   return (
     <div className={styles.viewer}>
@@ -532,6 +684,36 @@ export function StructureViewer(props: StructureViewerContract) {
             fill={constants.ALICE_BLUE}
             fillOpacity={0}
             transform={"scale(2.5) rotate(90)"}
+          >
+            <path
+              d="m -16,43 4.6278,10"
+              stroke={constants.HONOLULU_BLUE}
+              stroke-width="3"
+              stroke-linecap="round"
+            />
+            <path
+              d="M -0.8139,43 3.8139,53"
+              stroke={constants.HONOLULU_BLUE}
+              stroke-width="3"
+              stroke-linecap="round"
+            />
+            <path
+              d="M 14.3722,43 19,53"
+              stroke={constants.HONOLULU_BLUE}
+              stroke-width="3"
+              stroke-linecap="round"
+            />
+            <path
+              d="M 4.3971,3.75 22.1506,34.5 c 1.7321,3 -0.433,6.75 -3.8971,6.75 h -35.50702 c -3.4641,0 -5.62917,-3.75 -3.89712,-6.75 L -3.3971,3.75 c 1.732,-2.999999 6.0622,-3 7.7942,0 z"
+              stroke={constants.HONOLULU_BLUE}
+              stroke-width="3"
+            />
+          </g>
+          <g
+            id="supportInverted"
+            fill={constants.ALICE_BLUE}
+            fillOpacity={0}
+            transform={"scale(2.5) rotate(-90)"}
           >
             <path
               d="m -16,43 4.6278,10"
@@ -613,12 +795,44 @@ export function StructureViewer(props: StructureViewerContract) {
           squareSize
       );
   }
+
+  function rerenderSupport(support: Support) {
+    const svg = d3.select(ref.current);
+
+    const leftSupport = svg.select(`#sl${support.id}`);
+
+    leftSupport
+      .attr("x", support.position.x * squareSize)
+      .attr("y", support.position.y * squareSize);
+
+    if (isDimensionable(support)) {
+      const supportRectangle = svg.select(`#srect${support.id}`);
+
+      supportRectangle
+        .attr("x", support.position.x * squareSize)
+        .attr("y", support.position.y * squareSize)
+        .attr("width", support.dimensions.width * squareSize)
+        .attr("height", support.dimensions.height * squareSize);
+
+      const rightSupport = svg.select(`#sr${support.id}`);
+
+      rightSupport
+        .attr(
+          "x",
+          (support.position.x + (support.dimensions?.width ?? 1)) * squareSize
+        )
+        .attr(
+          "y",
+          (support.position.y + (support.dimensions?.height ?? 1)) * squareSize
+        );
+    }
+  }
 }
 
 function isDimensionable(obj: any): obj is Dimensionable {
   return (
     "dimensions" in obj &&
     obj.dimensions &&
-    obj.dimensions.width + obj.dimensions.height > 0
+    (obj.dimensions.width ?? 0) + (obj.dimensions.height ?? 0) > 0
   );
 }
