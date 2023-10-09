@@ -168,21 +168,48 @@ export function StructureViewer(props: StructureViewerContract) {
   const draggingForce = (event: any, force: Force) => {
     const x = Math.round((event.x + deltaX) / squareSize);
     const y = Math.round((event.y + deltaY) / squareSize);
-
-    const newForce = new Force(
-      force.load,
-      force.orientation,
-      force.position,
-      force.size,
-      force.id
-    );
-
-    newForce.setPosition(x, y, props.width, props.height);
     const selection = d3.select(item);
 
-    selection
-      .attr("x", newForce.position.x * squareSize)
-      .attr("y", newForce.position.y * squareSize);
+    if (force.selected) {
+      const angle =
+        angleBetween(force.position.x, force.position.y + 10, x, y) - 90;
+      //console.log(angle);
+      if (angle < -225) {
+        force.orientation = 0;
+        if (force.load < 0) force.load *= -1;
+      } else if (angle < -135) {
+        force.orientation = 1;
+        if (force.load < 0) force.load *= -1;
+      } else if (angle < -45) {
+        force.orientation = 0;
+        if (force.load > 0) force.load *= -1;
+      } else {
+        force.orientation = 1;
+        if (force.load > 0) force.load *= -1;
+      }
+      //console.log(force.orientation, force.load);
+      selection.attr(
+        "transform",
+        `rotate( ${getForceRotation(force)} ${force.position.x * squareSize} ${
+          force.position.y * squareSize
+        })`
+      );
+    } else {
+      const newForce = new Force(
+        force.load,
+        force.orientation,
+        force.position,
+        force.size,
+        force.id
+      );
+
+      newForce.setPosition(x, y, props.width, props.height);
+      const selection = d3.select(item);
+
+      selection
+        .attr("x", newForce.position.x * squareSize)
+        .attr("y", newForce.position.y * squareSize);
+    }
   };
 
   const draggingSupport = (event: any, support: Support) => {
@@ -335,8 +362,8 @@ export function StructureViewer(props: StructureViewerContract) {
   };
 
   const draggingLeftSupport = (event: any, leftSupport: Support) => {
-    const x = Math.round(event.x / squareSize);
-    const y = Math.round(event.y / squareSize);
+    const x = Math.round((event.x + deltaX) / squareSize);
+    const y = Math.round((event.y + deltaY) / squareSize);
 
     console.log(y);
 
@@ -357,10 +384,10 @@ export function StructureViewer(props: StructureViewerContract) {
       leftSupport.dimensions.width += widthChange;
       leftSupport.dimensions.height += heightChange;
 
-      if (leftSupport.dimensions.width < 1) leftSupport.dimensions.width = 1;
+      if (leftSupport.dimensions.width < 0) leftSupport.dimensions.width = 0;
       else positionX -= widthChange;
 
-      if (leftSupport.dimensions.height < 1) leftSupport.dimensions.height = 1;
+      if (leftSupport.dimensions.height < 0) leftSupport.dimensions.height = 0;
       else positionY -= heightChange;
     } else {
       positionX -= widthChange;
@@ -385,9 +412,9 @@ export function StructureViewer(props: StructureViewerContract) {
     rightSupport.dimensions.width -= widthChange;
     rightSupport.dimensions.height -= heightChange;
 
-    if (rightSupport.dimensions.width < 1) rightSupport.dimensions.width = 1;
+    if (rightSupport.dimensions.width < 0) rightSupport.dimensions.width = 0;
 
-    if (rightSupport.dimensions.height < 1) rightSupport.dimensions.height = 1;
+    if (rightSupport.dimensions.height < 0) rightSupport.dimensions.height = 0;
 
     rerenderSupport(rightSupport);
   };
@@ -455,22 +482,28 @@ export function StructureViewer(props: StructureViewerContract) {
       .attr("href", "#force")
       .attr("x", (f: Force) => f.position.x * squareSize - 15)
       .attr("y", (f: Force) => f.position.y * squareSize)
+      .attr(
+        "transform",
+        (f: Force) => `rotate(${getForceRotation(f)}
+       ${f.position.x * squareSize} ${f.position.y * squareSize})`
+      )
       .attr("id", (f: Force) => `f${f.id}`);
 
     //force.raise();
 
     force.on("click", (event: any) => {
-      const datum = force.datum();
+      const datum = event.target.__data__;
 
       if (datum.selected === false) {
-        force
+        svg
           .selectAll(`#f${datum.id}`)
           .attr("stroke", constants.POPPY)
-          .attr("stroke-width", 3);
+          .attr("stroke-width", 1);
+
         datum.selected = true;
       } else {
         datum.selected = false;
-        force.selectAll(`#f${datum.id}`).attr("stroke", "none");
+        svg.selectAll(`#f${datum.id}`).attr("stroke", "none");
       }
     });
 
@@ -826,6 +859,24 @@ export function StructureViewer(props: StructureViewerContract) {
           (support.position.y + (support.dimensions?.height ?? 1)) * squareSize
         );
     }
+  }
+
+  function getForceRotation(force: Force) {
+    let angle = 0;
+
+    if (force.orientation === 0) {
+      angle = 90;
+
+      if (force.load < 0) angle *= -1;
+    } else if (force.load > 0) {
+      angle = 180;
+    }
+
+    return angle;
+  }
+
+  function angleBetween(x1: number, y1: number, x2: number, y2: number) {
+    return Math.atan2(y2 - y1, x2 - x1) * (180 / Math.PI);
   }
 }
 
