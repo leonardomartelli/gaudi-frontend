@@ -1,10 +1,9 @@
 import { CommonButton } from "../../buttons/common-button/common-button.component";
-import React, { useContext, useRef, useState } from "react";
+import React, { useContext, useRef } from "react";
 import styles from "./project-toolbar.module.scss";
 import { ArrowDownIcon } from "../../icons/arrow-down-icon.component";
 import constants from "../../../assets/constants";
 import { SeparatorIcon } from "../../icons/separator-icon.component";
-import { MobileSupportIcon } from "../../icons/mobile-support-icon.component";
 import { FixedSupportIcon } from "../../icons/fixed-support-icon.component";
 import { ForceIcon } from "../../icons/force-icon.component";
 import { ArrowUpIcon } from "../../icons/arrow-up-icon.component";
@@ -12,10 +11,8 @@ import { FileSelection } from "../../misc/file-selector/file-selection.component
 import { VoidConstantRegionIcon } from "../../icons/void-constant-region-icon.component";
 import { MaterialConstanRegionIcon } from "../../icons/material-constant-region-icon.component";
 import { StartIcon } from "../../icons/start-icon.component";
-import { MaterialPropertiesIcon } from "../../icons/material-properties-icon.component";
 import { OptimizationContext } from "../../../contexts/optimization-context/optimization-context";
 import { eCreationState } from "../../../models/enums/eCreationState";
-import { CommonSlider } from "../../input/common-slider/common-slider.component";
 
 export function ProjectToolBar() {
   const inputRef = useRef<HTMLInputElement>(null);
@@ -72,12 +69,6 @@ export function ProjectToolBar() {
         }}
       />
 
-      <CommonButton
-        icon={MobileSupportIcon}
-        iconColor={constants.ALICE_BLUE}
-        label="Criar Suporte Móvel"
-        onClick={() => {}}
-      />
       <CommonButton
         icon={FixedSupportIcon}
         iconColor={constants.ALICE_BLUE}

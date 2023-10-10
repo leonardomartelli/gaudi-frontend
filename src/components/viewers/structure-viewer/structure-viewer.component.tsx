@@ -125,7 +125,8 @@ export function StructureViewer(props: StructureViewerContract) {
       .attr(
         "fill-opacity",
         (d: number) => densities[to_id(d % width, Math.floor(d / width))]
-      );
+      )
+      .lower();
 
     structure.on("click", (event: any) => {
       const x = event.target.x.animVal.value;
@@ -203,12 +204,38 @@ export function StructureViewer(props: StructureViewerContract) {
         force.id
       );
 
+      const oldX = newForce.position.x;
+      const oldY = newForce.position.y;
+
       newForce.setPosition(x, y, props.width, props.height);
       const selection = d3.select(item);
 
+      let xDiff = newForce.position.x - oldX;
+      let yDiff = newForce.position.y - oldY;
+
+      let xToUse = xDiff;
+      let yToUse = yDiff;
+
+      if (force.orientation === 0) {
+        xToUse = yDiff;
+        yToUse = xDiff;
+
+        if (force.load < 0) xToUse *= -1;
+      } else if (force.load > 0) {
+        yToUse *= -1;
+        xToUse *= -1;
+      }
+
+      console.log(xToUse, yToUse);
       selection
         .attr("x", newForce.position.x * squareSize)
-        .attr("y", newForce.position.y * squareSize);
+        .attr("y", newForce.position.y * squareSize)
+        .attr(
+          "transform",
+          `rotate( ${getForceRotation(force)} ${
+            force.position.x * squareSize
+          } ${force.position.y * squareSize}) translate(${xToUse}, ${yToUse})`
+        );
     }
   };
 

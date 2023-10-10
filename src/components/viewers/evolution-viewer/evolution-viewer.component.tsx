@@ -43,6 +43,9 @@ export function EvolutionViewer(props: EvolutionViewerContract) {
           .axisBottom(x)
           .ticks(width / 80)
           .tickSizeOuter(0)
+      )
+      .call((g) =>
+        g.selectAll(".tick").selectAll("text").attr("font-size", "12pt")
       );
 
     // Add the y-axis, remove the domain line, add grid lines and a label.
@@ -54,7 +57,7 @@ export function EvolutionViewer(props: EvolutionViewerContract) {
     svg
       .append("g")
       .attr("transform", `translate(${margin.left},0)`)
-      .attr("color", constants.POPPY)
+      .attr("color", constants.FROG_GREEN)
       .call(d3.axisLeft(volumeY).ticks(height / 40))
       .call((g) => g.select(".domain").remove())
       .call((g) => {
@@ -72,10 +75,10 @@ export function EvolutionViewer(props: EvolutionViewerContract) {
           .attr("transform", "rotate(-90)")
           .attr("y", -margin.left * 5)
           .attr("x", -(height - margin.bottom - margin.top) / 2)
-          .attr("fill", constants.POPPY)
+          .attr("fill", constants.FROG_GREEN)
           .attr("font-size", axisFontSize)
-          .attr("text-anchor", "center")
-          .text("Volume")
+          .attr("text-anchor", "middle")
+          .text("Volume (%)")
       );
 
     svg
@@ -101,7 +104,7 @@ export function EvolutionViewer(props: EvolutionViewerContract) {
           .attr("x", (height - margin.bottom - margin.top) / 2)
           .attr("fill", constants.ALICE_BLUE)
           .attr("font-size", axisFontSize)
-          .attr("text-anchor", "center")
+          .attr("text-anchor", "middle")
           .text("Objetivo")
       );
 
@@ -111,9 +114,10 @@ export function EvolutionViewer(props: EvolutionViewerContract) {
       .join("path")
       .attr("fill", "none")
       .attr("class", "volLine")
-      .attr("stroke", constants.POPPY)
+      .attr("stroke", constants.FROG_GREEN)
       .attr("stroke-width", 4)
-      .attr("d", volumeLine(volumes));
+      .attr("d", volumeLine(volumes))
+      .raise();
 
     svg
       .selectAll(".objLine")
@@ -123,7 +127,8 @@ export function EvolutionViewer(props: EvolutionViewerContract) {
       .attr("class", "objLine")
       .attr("stroke", constants.ALICE_BLUE)
       .attr("stroke-width", 4)
-      .attr("d", objectiveLine(objectives));
+      .attr("d", objectiveLine(objectives))
+      .raise();
 
     function getVolumeLine(volumes: [number, number][], maxVol: number) {
       const x = d3.scaleLinear(
@@ -132,14 +137,14 @@ export function EvolutionViewer(props: EvolutionViewerContract) {
       );
 
       const volumeY = d3.scaleLinear(
-        [0, maxVol],
+        [0, 100],
         [height - margin.bottom, margin.top]
       );
 
       const volumeLine = d3
         .line()
         .x((d: [number, number]) => x(d[0]))
-        .y((d: [number, number]) => volumeY(d[1]));
+        .y((d: [number, number]) => volumeY((d[1] / maxVol) * 100));
 
       return { x, volumeY, volumeLine };
     }
