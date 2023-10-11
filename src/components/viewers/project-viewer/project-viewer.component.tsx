@@ -15,6 +15,14 @@ export function ProjectViewer() {
     optimizationContext.project.boundaryConditions.constantRegions =
       new Array<ConstantRegion>();
 
+  const removeCondition = (
+    removeSpecificCondition: (id: number) => void,
+    id: number
+  ) => {
+    removeSpecificCondition(id);
+    optimizationContext.updateProject(optimizationContext.project);
+  };
+
   return (
     <div className={styles.project}>
       <StructureViewer
@@ -34,7 +42,15 @@ export function ProjectViewer() {
           optimizationContext.setTriggerUpdate(target)
         }
         optimizationIdentifier={optimizationContext.optimizationIdentifier}
-        removeSupport={optimizationContext.removeSupport}
+        removeSupport={(id: number) =>
+          removeCondition(optimizationContext.removeSupport, id)
+        }
+        removeConstantRegion={(id: number) =>
+          removeCondition(optimizationContext.removeConstantRegion, id)
+        }
+        removeForce={(id: number) =>
+          removeCondition(optimizationContext.removeForce, id)
+        }
       />
 
       <div className={styles.rightSide}>

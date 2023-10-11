@@ -23,4 +23,6 @@ export const OptimizationContext = createContext<OptimizationContextContract>({
   objectives: [0],
   optimizationIdentifier: "",
   removeSupport: (id: number) => {},
+  removeForce: (id: number) => {},
+  removeConstantRegion: (id: number) => {},
 });

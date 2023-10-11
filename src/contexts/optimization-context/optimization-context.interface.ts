@@ -3,6 +3,8 @@ import { Project } from "../../models/project/project.model";
 
 export interface OptimizationContextContract {
   removeSupport: (id: number) => void;
+  removeForce: (id: number) => void;
+  removeConstantRegion: (id: number) => void;
   optimizationIdentifier: string;
   project: Project;
   onOptimizationStart: () => void;

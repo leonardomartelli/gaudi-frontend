@@ -98,6 +98,18 @@ export function OptimizationContextProvider(
       project.boundaryConditions.supports.filter((sup) => sup.id !== id);
   };
 
+  const removeForce = (id: number) => {
+    project.boundaryConditions.forces =
+      project.boundaryConditions.forces.filter((sup) => sup.id !== id);
+  };
+
+  const removeConstantRegion = (id: number) => {
+    project.boundaryConditions.constantRegions =
+      project.boundaryConditions.constantRegions?.filter(
+        (sup) => sup.id !== id
+      );
+  };
+
   const getInitialValue = () => {
     return {
       densities: densities,
@@ -119,6 +131,8 @@ export function OptimizationContextProvider(
       volumes: volumes,
       optimizationIdentifier: optimizationIdentifier,
       removeSupport: removeSupport,
+      removeConstantRegion: removeConstantRegion,
+      removeForce: removeForce,
     };
   };
 
