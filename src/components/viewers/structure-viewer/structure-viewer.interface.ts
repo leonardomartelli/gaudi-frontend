@@ -16,4 +16,6 @@ export interface StructureViewerContract extends CommonComponentContract {
   creationState: eCreationState;
   setCreationState: (newState: eCreationState) => void;
   removeSupport: (id: number) => void;
+  removeConstantRegion: (id: number) => void;
+  removeForce: (id: number) => void;
 }

@@ -7,7 +7,7 @@ export class Force implements PositionalCondition {
   position: Position;
   size?: number;
   selected?: boolean;
-  id?: number;
+  id: number;
 
   constructor(
     load: number,
@@ -20,7 +20,7 @@ export class Force implements PositionalCondition {
     this.orientation = orientation;
     this.position = position;
     this.size = size;
-    this.id = id;
+    this.id = id ?? 0;
   }
 
   setPosition(x: number, y: number, maxX: number, maxY: number): void {
