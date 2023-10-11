@@ -39,7 +39,13 @@ export function StructureViewer(props: StructureViewerContract) {
     switch (props.creationState) {
       case eCreationState.FORCE:
         props.forces.push(
-          new Force(-1, 1, creationPosition, undefined, props.forces.length)
+          new Force(
+            -1,
+            1,
+            creationPosition,
+            undefined,
+            (props.forces[props.forces.length - 1]?.id ?? -1) + 1
+          )
         );
         break;
       case eCreationState.FIXED_SUPPORT:
@@ -68,7 +74,8 @@ export function StructureViewer(props: StructureViewerContract) {
             creationPosition,
             new Dimensions(10, 10),
             0,
-            props.constantRegions.length
+            (props.constantRegions[props.constantRegions.length - 1]?.id ??
+              -1) + 1
           )
         );
         break;
@@ -78,7 +85,8 @@ export function StructureViewer(props: StructureViewerContract) {
             creationPosition,
             new Dimensions(10, 10),
             1,
-            props.constantRegions.length
+            (props.constantRegions[props.constantRegions.length - 1]?.id ??
+              -1) + 1
           )
         );
         break;
@@ -519,7 +527,7 @@ export function StructureViewer(props: StructureViewerContract) {
       .join("use")
       .attr("class", "forces")
       .attr("href", "#force")
-      .attr("x", (f: Force) => f.position.x * squareSize - 15)
+      .attr("x", (f: Force) => f.position.x * squareSize)
       .attr("y", (f: Force) => f.position.y * squareSize)
       .attr(
         "transform",
@@ -533,16 +541,23 @@ export function StructureViewer(props: StructureViewerContract) {
     force.on("click", (event: any) => {
       const datum = event.target.__data__;
 
-      if (datum.selected === false) {
-        svg
-          .selectAll(`#f${datum.id}`)
-          .attr("stroke", constants.POPPY)
-          .attr("stroke-width", 1);
-
-        datum.selected = true;
+      if (event.shiftKey) {
+        const datum = event.target.__data__;
+        props.removeForce(datum.id);
       } else {
-        datum.selected = false;
-        svg.selectAll(`#f${datum.id}`).attr("stroke", "none");
+        if (datum.selected === false) {
+          svg
+            .selectAll(`#f${datum.id}`)
+            .attr("stroke", constants.POPPY)
+            .attr("stroke-width", 1);
+
+          datum.selected = true;
+        } else {
+          datum.selected = false;
+          svg.selectAll(`#f${datum.id}`).attr("stroke", "none");
+        }
+
+        setPositionChanged(positionChanged + 1);
       }
     });
 
@@ -566,16 +581,15 @@ export function StructureViewer(props: StructureViewerContract) {
 
         return p.dimensions.height * squareSize;
       })
-      .attr("stroke", (p: ConstantRegion) =>
-        p.type === 0 ? constants.POPPY : constants.ALICE_BLUE
-      )
+      .attr("stroke", constants.POPPY)
       .attr("stroke-width", 7.5)
       .attr("fill", (p: ConstantRegion) =>
         p.type === 1 ? constants.POPPY : constants.ALICE_BLUE
       )
       .attr("x", (f: ConstantRegion) => f.position.x * squareSize)
       .attr("y", (f: ConstantRegion) => f.position.y * squareSize)
-      .attr("id", (cr: ConstantRegion) => `cr${cr.id}`);
+      .attr("id", (cr: ConstantRegion) => `cr${cr.id}`)
+      .attr("fill-opacity", 0.6);
 
     const point1 = svg
       .selectAll<SVGCircleElement, ConstantRegion>(".rectPoint1")
@@ -633,7 +647,13 @@ export function StructureViewer(props: StructureViewerContract) {
       .attr("r", 15)
       .attr("id", (cr: PositionalCondition) => `cr${cr.id}p4`);
 
-    constantRegion.raise();
+    constantRegion.on("click", (event: any) => {
+      if (event.shiftKey) {
+        const datum = event.target.__data__;
+        props.removeConstantRegion(datum.id);
+      }
+    });
+
     point1.raise();
     point2.raise();
     point3.raise();
@@ -683,9 +703,10 @@ export function StructureViewer(props: StructureViewerContract) {
       .join("use")
       .attr("class", "leftSupport")
       .attr("id", (f: Support) => `sl${f.id}`)
-      .attr("href", "#support")
+      .attr("href", (s: Support) => `#${getSupportIcon(s)}`)
       .attr("x", (f: Support) => f.position.x * squareSize)
-      .attr("y", (f: Support) => f.position.y * squareSize);
+      .attr("y", (f: Support) => f.position.y * squareSize)
+      .attr("style", "visibility:visible");
 
     leftSupportHandler(firstSupport);
 
@@ -695,7 +716,7 @@ export function StructureViewer(props: StructureViewerContract) {
       .join("use")
       .attr("class", "rightSupport")
       .attr("id", (f: Support) => `sr${f.id}`)
-      .attr("href", "#supportInverted")
+      .attr("href", (s: Support) => `#inverted_${getSupportIcon(s)}`)
       .attr(
         "x",
         (sup: Support) =>
@@ -714,20 +735,34 @@ export function StructureViewer(props: StructureViewerContract) {
 
     rightSupportHandler(secondSupport);
 
-    // support.on("click", (event: any) => {
-    //   if (event.shiftKey) {
-    //     const datum = support.datum();
+    firstSupport.on("click", (event: any) => {
+      const datum: Support = event.target.__data__;
+      if (event.shiftKey) {
+        props.removeSupport(datum.id);
+      } else if (isDimensionable(datum) === false) {
+        datum.dimensions = new Dimensions(5, 5);
+      }
+    });
 
-    //     props.removeSupport(datum.id ?? event.target.x);
+    secondSupport.on("click", (event: any) => {
+      if (event.shiftKey) {
+        const datum = event.target.__data__;
+        props.removeSupport(datum.id);
+      }
+    });
 
-    //     setPositionChanged(positionChanged + 1);
-    //   }
-    // });
+    rectangle.on("click", (event: any) => {
+      if (event.shiftKey) {
+        const datum = event.target.__data__;
+        props.removeSupport(datum.id);
+      }
+    });
 
     // support.raise();
   }, [
     leftSupportHandler,
     positionChanged,
+    props,
     props.supports,
     rightSupportHandler,
     supportRectangleHandler,
@@ -739,20 +774,27 @@ export function StructureViewer(props: StructureViewerContract) {
         <defs>
           <g id="force" transform={"scale(2.5)"}>
             <path
-              d="M8 55L0.205772 37L15.7942 37L8 55Z"
+              d="M 0.01549114,52 -7.7787369,34 h 15.588428 z"
               fill={constants.HONOLULU_BLUE}
             />
             <rect
-              x="6"
-              y="8"
+              x="-2.0154908"
+              y="-34"
               width="4"
-              height="29"
+              height="26"
+              transform="scale(-1)"
               fill={constants.HONOLULU_BLUE}
             />
-            <circle cx="8" cy="3" r="3" fill={constants.HONOLULU_BLUE} />
+            <circle
+              cx="-0.015491216"
+              cy="-3"
+              r="3"
+              transform="scale(-1)"
+              fill={constants.HONOLULU_BLUE}
+            />
           </g>
           <g
-            id="support"
+            id="fixed_support"
             fill={constants.ALICE_BLUE}
             fillOpacity={0}
             transform={"scale(2.5) rotate(90)"}
@@ -782,7 +824,40 @@ export function StructureViewer(props: StructureViewerContract) {
             />
           </g>
           <g
-            id="supportInverted"
+            id="mobile_support"
+            fill={constants.ALICE_BLUE}
+            fillOpacity={0}
+            transform={"scale(2.5) rotate(90)"}
+          >
+            <path
+              d="m -4.15913,3.7031329 c 1.732,-3.00000003 6.0622,-3.00000003 7.7942,0 l 17.7535,30.7500001 c 1.7321,3 -0.433,6.75 -3.8971,6.75 h -35.507 c -3.4641,0 -5.62919,-3.75 -3.8971,-6.75 z"
+              stroke={constants.HONOLULU_BLUE}
+              strokeWidth="3"
+            />
+            <circle
+              cx="14.237968"
+              cy="48.953133"
+              r="4.5"
+              stroke={constants.HONOLULU_BLUE}
+              strokeWidth="3"
+            />
+            <circle
+              cx="-15.76203"
+              cy="48.953133"
+              r="4.5"
+              stroke={constants.HONOLULU_BLUE}
+              strokeWidth="3"
+            />
+            <circle
+              cx="-0.76202965"
+              cy="48.953133"
+              r="4.5"
+              stroke={constants.HONOLULU_BLUE}
+              strokeWidth="3"
+            />
+          </g>
+          <g
+            id="inverted_fixed_support"
             fill={constants.ALICE_BLUE}
             fillOpacity={0}
             transform={"scale(2.5) rotate(-90)"}
@@ -809,6 +884,39 @@ export function StructureViewer(props: StructureViewerContract) {
               d="M 4.3971,3.75 22.1506,34.5 c 1.7321,3 -0.433,6.75 -3.8971,6.75 h -35.50702 c -3.4641,0 -5.62917,-3.75 -3.89712,-6.75 L -3.3971,3.75 c 1.732,-2.999999 6.0622,-3 7.7942,0 z"
               stroke={constants.HONOLULU_BLUE}
               stroke-width="3"
+            />
+          </g>
+          <g
+            id="inverted_mobile_support"
+            fill={constants.ALICE_BLUE}
+            fillOpacity={0}
+            transform={"scale(2.5) rotate(-90)"}
+          >
+            <path
+              d="m -4.15913,3.7031329 c 1.732,-3.00000003 6.0622,-3.00000003 7.7942,0 l 17.7535,30.7500001 c 1.7321,3 -0.433,6.75 -3.8971,6.75 h -35.507 c -3.4641,0 -5.62919,-3.75 -3.8971,-6.75 z"
+              stroke={constants.HONOLULU_BLUE}
+              strokeWidth="3"
+            />
+            <circle
+              cx="14.237968"
+              cy="48.953133"
+              r="4.5"
+              stroke={constants.HONOLULU_BLUE}
+              strokeWidth="3"
+            />
+            <circle
+              cx="-15.76203"
+              cy="48.953133"
+              r="4.5"
+              stroke={constants.HONOLULU_BLUE}
+              strokeWidth="3"
+            />
+            <circle
+              cx="-0.76202965"
+              cy="48.953133"
+              r="4.5"
+              stroke={constants.HONOLULU_BLUE}
+              strokeWidth="3"
             />
           </g>
         </defs>
@@ -916,6 +1024,10 @@ export function StructureViewer(props: StructureViewerContract) {
 
   function angleBetween(x1: number, y1: number, x2: number, y2: number) {
     return Math.atan2(y2 - y1, x2 - x1) * (180 / Math.PI);
+  }
+
+  function getSupportIcon(s: Support) {
+    return s.type === 0 ? "mobile_support" : "fixed_support";
   }
 }
 
