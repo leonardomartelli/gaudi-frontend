@@ -41,13 +41,26 @@ export function StructureViewer(props: StructureViewerContract) {
         props.forces.push(
           new Force(-1, 1, creationPosition, undefined, props.forces.length)
         );
-        setPositionChanged(positionChanged + 1);
         break;
-      case eCreationState.SUPPORT:
+      case eCreationState.FIXED_SUPPORT:
         props.supports.push(
-          new Support(creationPosition, 0, undefined, props.supports.length)
+          new Support(
+            creationPosition,
+            1,
+            undefined,
+            (props.supports[props.supports.length - 1]?.id ?? -1) + 1
+          )
         );
-        setPositionChanged(positionChanged + 1);
+        break;
+      case eCreationState.MOBILE_SUPPORT:
+        props.supports.push(
+          new Support(
+            creationPosition,
+            0,
+            undefined,
+            (props.supports[props.supports.length - 1]?.id ?? -1) + 1
+          )
+        );
         break;
       case eCreationState.VOID:
         props.constantRegions.push(
@@ -58,7 +71,6 @@ export function StructureViewer(props: StructureViewerContract) {
             props.constantRegions.length
           )
         );
-        setPositionChanged(positionChanged + 1);
         break;
       case eCreationState.MATERIAL:
         props.constantRegions.push(
@@ -69,11 +81,11 @@ export function StructureViewer(props: StructureViewerContract) {
             props.constantRegions.length
           )
         );
-        setPositionChanged(positionChanged + 1);
         break;
       default:
-        break;
+        return;
     }
+    setPositionChanged(positionChanged + 1);
 
     props.setCreationState(eCreationState.NONE);
   }, [creationXPosition, creationYPosition]);

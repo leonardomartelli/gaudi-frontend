@@ -1,7 +1,8 @@
 export enum eCreationState {
   NONE,
   FORCE,
-  SUPPORT,
+  FIXED_SUPPORT,
+  MOBILE_SUPPORT,
   VOID,
   MATERIAL,
 }

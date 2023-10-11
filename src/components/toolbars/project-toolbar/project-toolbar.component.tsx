@@ -4,6 +4,7 @@ import styles from "./project-toolbar.module.scss";
 import { ArrowDownIcon } from "../../icons/arrow-down-icon.component";
 import constants from "../../../assets/constants";
 import { SeparatorIcon } from "../../icons/separator-icon.component";
+import { MobileSupportIcon } from "../../icons/mobile-support-icon.component";
 import { FixedSupportIcon } from "../../icons/fixed-support-icon.component";
 import { ForceIcon } from "../../icons/force-icon.component";
 import { ArrowUpIcon } from "../../icons/arrow-up-icon.component";
@@ -74,9 +75,19 @@ export function ProjectToolBar() {
         iconColor={constants.ALICE_BLUE}
         label="Criar Suporte Fixo"
         onClick={() => {
-          context.setCreationState(eCreationState.SUPPORT);
+          context.setCreationState(eCreationState.FIXED_SUPPORT);
         }}
       />
+
+      <CommonButton
+        icon={MobileSupportIcon}
+        iconColor={constants.ALICE_BLUE}
+        label="Criar Suporte Móvel"
+        onClick={() => {
+          context.setCreationState(eCreationState.MOBILE_SUPPORT);
+        }}
+      />
+
       <CommonButton
         icon={ForceIcon}
         iconColor={constants.ALICE_BLUE}
