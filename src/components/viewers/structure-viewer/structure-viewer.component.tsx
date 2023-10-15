@@ -191,72 +191,43 @@ export function StructureViewer(props: StructureViewerContract) {
     const y = Math.round((event.y + deltaY) / squareSize);
     const selection = d3.select(item);
 
-    if (force.selected) {
-      const angle =
-        angleBetween(force.position.x, force.position.y + 10, x, y) - 90;
-      //console.log(angle);
-      if (angle < -225) {
-        force.orientation = 0;
-        if (force.load < 0) force.load *= -1;
-      } else if (angle < -135) {
-        force.orientation = 1;
-        if (force.load < 0) force.load *= -1;
-      } else if (angle < -45) {
-        force.orientation = 0;
-        if (force.load > 0) force.load *= -1;
-      } else {
-        force.orientation = 1;
-        if (force.load > 0) force.load *= -1;
-      }
-      //console.log(force.orientation, force.load);
-      selection.attr(
+    const newForce = new Force(
+      force.load,
+      force.orientation,
+      force.position,
+      force.size,
+      force.id
+    );
+
+    const oldX = newForce.position.x;
+    const oldY = newForce.position.y;
+
+    newForce.setPosition(x, y, props.width, props.height);
+
+    let xDiff = newForce.position.x - oldX;
+    let yDiff = newForce.position.y - oldY;
+
+    let xToUse = xDiff;
+    let yToUse = yDiff;
+
+    if (force.orientation === 0) {
+      xToUse = yDiff;
+      yToUse = xDiff;
+
+      if (force.load < 0) xToUse *= -1;
+    } else if (force.load > 0) {
+      yToUse *= -1;
+      xToUse *= -1;
+    }
+    selection
+      .attr("x", newForce.position.x * squareSize)
+      .attr("y", newForce.position.y * squareSize)
+      .attr(
         "transform",
         `rotate( ${getForceRotation(force)} ${force.position.x * squareSize} ${
           force.position.y * squareSize
-        })`
+        }) translate(${xToUse}, ${yToUse})`
       );
-    } else {
-      const newForce = new Force(
-        force.load,
-        force.orientation,
-        force.position,
-        force.size,
-        force.id
-      );
-
-      const oldX = newForce.position.x;
-      const oldY = newForce.position.y;
-
-      newForce.setPosition(x, y, props.width, props.height);
-      const selection = d3.select(item);
-
-      let xDiff = newForce.position.x - oldX;
-      let yDiff = newForce.position.y - oldY;
-
-      let xToUse = xDiff;
-      let yToUse = yDiff;
-
-      if (force.orientation === 0) {
-        xToUse = yDiff;
-        yToUse = xDiff;
-
-        if (force.load < 0) xToUse *= -1;
-      } else if (force.load > 0) {
-        yToUse *= -1;
-        xToUse *= -1;
-      }
-
-      console.log(xToUse, yToUse);
-      selection
-        .attr("x", newForce.position.x * squareSize)
-        .attr("y", newForce.position.y * squareSize)
-        .attr(
-          "transform",
-          `rotate( ${getForceRotation(force)} ${
-            force.position.x * squareSize
-          } ${force.position.y * squareSize}) translate(${xToUse}, ${yToUse})`
-        );
-    }
   };
 
   const draggingSupport = (event: any, support: Support) => {
@@ -539,24 +510,13 @@ export function StructureViewer(props: StructureViewerContract) {
     //force.raise();
 
     force.on("click", (event: any) => {
-      const datum = event.target.__data__;
+      const datum: Force = event.target.__data__;
 
       if (event.shiftKey) {
         const datum = event.target.__data__;
         props.removeForce(datum.id);
       } else {
-        if (datum.selected === false) {
-          svg
-            .selectAll(`#f${datum.id}`)
-            .attr("stroke", constants.POPPY)
-            .attr("stroke-width", 1);
-
-          datum.selected = true;
-        } else {
-          datum.selected = false;
-          svg.selectAll(`#f${datum.id}`).attr("stroke", "none");
-        }
-
+        datum.orientation = (datum.orientation + 1) % 2;
         setPositionChanged(positionChanged + 1);
       }
     });
