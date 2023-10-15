@@ -58,7 +58,7 @@ export function EvolutionViewer(props: EvolutionViewerContract) {
       .append("g")
       .attr("transform", `translate(${margin.left},0)`)
       .attr("color", constants.FROG_GREEN)
-      .call(d3.axisLeft(volumeY).ticks(height / 40))
+      .call(d3.axisLeft(volumeY).ticks(10).tickSize(1))
       .call((g) => g.select(".domain").remove())
       .call((g) => {
         g.selectAll(".tick line")
@@ -85,7 +85,7 @@ export function EvolutionViewer(props: EvolutionViewerContract) {
       .append("g")
       .attr("transform", `translate(${width - margin.right},0)`)
       .attr("color", constants.ALICE_BLUE)
-      .call(d3.axisRight(objectiveY).ticks(height / 40))
+      .call(d3.axisRight(objectiveY).ticks(10).tickSize(1))
       .call((g) => g.select(".domain").remove())
       .call((g) => {
         g.selectAll(".tick line")
