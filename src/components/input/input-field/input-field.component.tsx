@@ -1,10 +1,7 @@
+import { InputFieldContract } from "./input-field.interface";
 import styles from "./input-field.module.scss";
 
-export function InputField(props: {
-  label: string;
-  value: number;
-  changeValue: (newVal: number) => void;
-}) {
+export function InputField(props: InputFieldContract) {
   return (
     <div className={styles.container}>
       <label className={styles.label}>{props.label}</label> <br />
@@ -15,6 +12,7 @@ export function InputField(props: {
         onChange={(changeEvent) =>
           props.changeValue(Number(changeEvent.target.value))
         }
+        step={props.step}
       />
     </div>
   );

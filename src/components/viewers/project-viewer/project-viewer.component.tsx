@@ -65,8 +65,8 @@ export function ProjectViewer() {
 
         <div className={styles.half}>
           <DesignVariablesViewer
-            objective={optimizationContext.objective}
-            volume={optimizationContext.volume}
+            objective={optimizationContext.currentObjective}
+            volume={optimizationContext.currentVolume}
             objectives={optimizationContext.objectives}
             volumes={optimizationContext.volumes}
           />

@@ -2,25 +2,40 @@ import { eCreationState } from "../../models/enums/eCreationState";
 import { Project } from "../../models/project/project.model";
 
 export interface OptimizationContextContract {
+  project: Project;
+  densities: Array<number>;
+  width: number;
+  height: number;
+  volumeFraction: number;
+
+  currentObjective: number;
+  currentVolume: number;
+
+  penalization: number;
+  materialDensity: number;
+  materialElasticity: number;
+  filterRadius: number;
+  configurePenalization: (c: number) => void;
+  configureMaterialDensity: (c: number) => void;
+  configureMaterialElasticity: (c: number) => void;
+  configureFilterRadius: (c: number) => void;
+
+  onOptimizationStart: () => void;
+
+  optimizationIdentifier: string;
+  volumes: Array<number>;
+  objectives: Array<number>;
+  creationState: eCreationState;
+
+  setCreationState: (newState: eCreationState) => void;
+  setTriggerUpdate: (c: number) => void;
+  updateProject: (newProject: Project) => void;
+
+  configureWidth: (nW: number) => void;
+  configureHeight: (nH: number) => void;
+
+  configureVolumeFraction: (nV: number) => void;
   removeSupport: (id: number) => void;
   removeForce: (id: number) => void;
   removeConstantRegion: (id: number) => void;
-  optimizationIdentifier: string;
-  project: Project;
-  onOptimizationStart: () => void;
-  densities: Array<number>;
-  objective: number;
-  volume: number;
-  setTriggerUpdate: (c: number) => void;
-  updateProject: (newProject: Project) => void;
-  creationState: eCreationState;
-  setCreationState: (newState: eCreationState) => void;
-  width: number;
-  height: number;
-  configureWidth: (nW: number) => void;
-  configureHeight: (nH: number) => void;
-  configureVolumeFraction: (nV: number) => void;
-  volumeFraction: number;
-  volumes: Array<number>;
-  objectives: Array<number>;
 }

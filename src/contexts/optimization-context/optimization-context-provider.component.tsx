@@ -12,14 +12,15 @@ export function OptimizationContextProvider(
 
   const updateProject = (newProject: Project) => {
     setProject(newProject);
-    setDensitites(
-      Array(
-        project.domain.dimensions.width * project.domain.dimensions.height
-      ).fill(project.domain.materialProperties.density)
-    );
+    resetDensities();
 
     setWidth(newProject.domain.dimensions.width);
     setHeight(newProject.domain.dimensions.height);
+
+    setFilterRadius(newProject.filterRadius);
+    setMaterialElasticity(newProject.domain.materialProperties.elasticity);
+    setMaterialDensity(newProject.domain.materialProperties.density);
+    setPenalization(newProject.penalization);
   };
 
   let [densities, setDensitites] = useState<Array<number>>(
@@ -66,7 +67,6 @@ export function OptimizationContextProvider(
         setOptimizationIdentifier("");
       }
     };
-
     fetchResult().catch(console.error);
   }, [objectives, optimizationIdentifier, triggerUpdate, volumes]);
 
@@ -75,6 +75,7 @@ export function OptimizationContextProvider(
   const configureHeight = (newHeight: number) => {
     setHeight(newHeight);
     project.domain.dimensions.height = newHeight;
+    resetDensities();
   };
 
   const [width, setWidth] = useState(project.domain.dimensions.width);
@@ -82,6 +83,7 @@ export function OptimizationContextProvider(
   const configureWidth = (newWidth: number) => {
     setWidth(newWidth);
     project.domain.dimensions.width = newWidth;
+    resetDensities();
   };
 
   let [volumeFraction, setVolumeFraction] = useState(
@@ -91,6 +93,38 @@ export function OptimizationContextProvider(
   const configureVolumeFraction = (val: number) => {
     project.domain.volumeFraction = val / 100;
     setVolumeFraction(val);
+  };
+
+  const [materialDensity, setMaterialDensity] = useState(
+    project.domain.materialProperties.density
+  );
+
+  const configureMaterialDensity = (val: number) => {
+    project.domain.materialProperties.density = val;
+    setMaterialDensity(val);
+  };
+
+  const [materialElasticity, setMaterialElasticity] = useState(
+    project.domain.materialProperties.elasticity
+  );
+
+  const configureMaterialElasticity = (val: number) => {
+    project.domain.materialProperties.elasticity = val;
+    setMaterialElasticity(val);
+  };
+
+  const [filterRadius, setFilterRadius] = useState(project.filterRadius);
+
+  const configureFilterRadius = (val: number) => {
+    project.filterRadius = val;
+    setFilterRadius(val);
+  };
+
+  const [penalization, setPenalization] = useState(project.penalization);
+
+  const configurePenalization = (val: number) => {
+    project.penalization = val;
+    setPenalization(val);
   };
 
   const removeSupport = (id: number) => {
@@ -112,27 +146,41 @@ export function OptimizationContextProvider(
 
   const getInitialValue = () => {
     return {
-      densities: densities,
       project: project,
-      updateProject: updateProject,
-      onOptimizationStart: onOptimizationStart,
-      objective: objective,
-      volume: volume,
-      setTriggerUpdate: setTriggerUpdate,
-      creationState: creationState,
-      setCreationState: setCreationState,
+      densities: densities,
+      currentObjective: objective,
+      currentVolume: volume,
       width: width,
-      configureWidth: configureWidth,
       height: height,
-      configureHeight: configureHeight,
       volumeFraction: volumeFraction,
-      configureVolumeFraction: configureVolumeFraction,
+
+      optimizationIdentifier: optimizationIdentifier,
+      creationState: creationState,
       objectives: objectives,
       volumes: volumes,
-      optimizationIdentifier: optimizationIdentifier,
+
+      updateProject: updateProject,
+      onOptimizationStart: onOptimizationStart,
+      setTriggerUpdate: setTriggerUpdate,
+
+      setCreationState: setCreationState,
+
       removeSupport: removeSupport,
       removeConstantRegion: removeConstantRegion,
       removeForce: removeForce,
+
+      configureWidth: configureWidth,
+      configureHeight: configureHeight,
+      configureVolumeFraction: configureVolumeFraction,
+
+      penalization: penalization,
+      configurePenalization: configurePenalization,
+      filterRadius: filterRadius,
+      configureFilterRadius: configureFilterRadius,
+      materialDensity: materialDensity,
+      configureMaterialDensity: configureMaterialDensity,
+      materialElasticity: materialElasticity,
+      configureMaterialElasticity: configureMaterialElasticity,
     };
   };
 
@@ -141,4 +189,12 @@ export function OptimizationContextProvider(
       {props.children}
     </OptimizationContext.Provider>
   );
+
+  function resetDensities() {
+    setDensitites(
+      Array(
+        project.domain.dimensions.width * project.domain.dimensions.height
+      ).fill(1)
+    );
+  }
 }

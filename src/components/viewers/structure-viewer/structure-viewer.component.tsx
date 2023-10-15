@@ -156,8 +156,6 @@ export function StructureViewer(props: StructureViewerContract) {
       setCreationYPosition(Math.round(y / squareSize));
     });
 
-    // svg.selectAll("use").raise();
-
     if (props.optimizationIdentifier !== "") {
       setCounter(counter + 1);
       props.triggerUpdate(counter);
@@ -507,8 +505,6 @@ export function StructureViewer(props: StructureViewerContract) {
       )
       .attr("id", (f: Force) => `f${f.id}`);
 
-    //force.raise();
-
     force.on("click", (event: any) => {
       const datum: Force = event.target.__data__;
 
@@ -522,7 +518,7 @@ export function StructureViewer(props: StructureViewerContract) {
     });
 
     forceHandler(force);
-  }, [forceHandler, positionChanged, props.forces]);
+  }, [forceHandler, positionChanged, props]);
 
   useEffect(() => {
     const svg = d3.select(ref.current);
@@ -626,13 +622,13 @@ export function StructureViewer(props: StructureViewerContract) {
     handlerCorner3(point3);
     handlerCorner4(point4);
   }, [
-    props.constantRegions,
     positionChanged,
     constantRegionHandler,
     handlerCorner1,
     handlerCorner2,
     handlerCorner3,
     handlerCorner4,
+    props,
   ]);
 
   useEffect(() => {
@@ -701,6 +697,7 @@ export function StructureViewer(props: StructureViewerContract) {
         props.removeSupport(datum.id);
       } else if (isDimensionable(datum) === false) {
         datum.dimensions = new Dimensions(5, 5);
+        rerenderSupport(datum);
       }
     });
 
@@ -717,8 +714,6 @@ export function StructureViewer(props: StructureViewerContract) {
         props.removeSupport(datum.id);
       }
     });
-
-    // support.raise();
   }, [
     leftSupportHandler,
     positionChanged,
@@ -762,25 +757,25 @@ export function StructureViewer(props: StructureViewerContract) {
             <path
               d="m -16,43 4.6278,10"
               stroke={constants.HONOLULU_BLUE}
-              stroke-width="3"
-              stroke-linecap="round"
+              strokeWidth="3"
+              strokeLinecap="round"
             />
             <path
               d="M -0.8139,43 3.8139,53"
               stroke={constants.HONOLULU_BLUE}
-              stroke-width="3"
-              stroke-linecap="round"
+              strokeWidth="3"
+              strokeLinecap="round"
             />
             <path
               d="M 14.3722,43 19,53"
               stroke={constants.HONOLULU_BLUE}
-              stroke-width="3"
-              stroke-linecap="round"
+              strokeWidth="3"
+              strokeLinecap="round"
             />
             <path
               d="M 4.3971,3.75 22.1506,34.5 c 1.7321,3 -0.433,6.75 -3.8971,6.75 h -35.50702 c -3.4641,0 -5.62917,-3.75 -3.89712,-6.75 L -3.3971,3.75 c 1.732,-2.999999 6.0622,-3 7.7942,0 z"
               stroke={constants.HONOLULU_BLUE}
-              stroke-width="3"
+              strokeWidth="3"
             />
           </g>
           <g
@@ -825,25 +820,25 @@ export function StructureViewer(props: StructureViewerContract) {
             <path
               d="m -16,43 4.6278,10"
               stroke={constants.HONOLULU_BLUE}
-              stroke-width="3"
-              stroke-linecap="round"
+              strokeWidth="3"
+              strokeLinecap="round"
             />
             <path
               d="M -0.8139,43 3.8139,53"
               stroke={constants.HONOLULU_BLUE}
-              stroke-width="3"
-              stroke-linecap="round"
+              strokeWidth="3"
+              strokeLinecap="round"
             />
             <path
               d="M 14.3722,43 19,53"
               stroke={constants.HONOLULU_BLUE}
-              stroke-width="3"
-              stroke-linecap="round"
+              strokeWidth="3"
+              strokeLinecap="round"
             />
             <path
               d="M 4.3971,3.75 22.1506,34.5 c 1.7321,3 -0.433,6.75 -3.8971,6.75 h -35.50702 c -3.4641,0 -5.62917,-3.75 -3.89712,-6.75 L -3.3971,3.75 c 1.732,-2.999999 6.0622,-3 7.7942,0 z"
               stroke={constants.HONOLULU_BLUE}
-              stroke-width="3"
+              strokeWidth="3"
             />
           </g>
           <g
@@ -952,7 +947,8 @@ export function StructureViewer(props: StructureViewerContract) {
         .attr("x", support.position.x * squareSize)
         .attr("y", support.position.y * squareSize)
         .attr("width", support.dimensions.width * squareSize)
-        .attr("height", support.dimensions.height * squareSize);
+        .attr("height", support.dimensions.height * squareSize)
+        .attr("style", "visibility: visible");
 
       const rightSupport = svg.select(`#sr${support.id}`);
 
@@ -964,7 +960,8 @@ export function StructureViewer(props: StructureViewerContract) {
         .attr(
           "y",
           (support.position.y + (support.dimensions?.height ?? 1)) * squareSize
-        );
+        )
+        .attr("style", "visibility: visible");
     }
   }
 

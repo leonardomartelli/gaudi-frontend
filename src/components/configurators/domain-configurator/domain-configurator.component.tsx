@@ -12,42 +12,6 @@ export function DomainConfigurator(props: {
 }) {
   const optimizationContext = useContext(OptimizationContext);
 
-  const [penalization, setPenalization] = useState(
-    optimizationContext.project.penalization
-  );
-
-  const changePenalization = (newPenalization: number) => {
-    setPenalization(newPenalization);
-    optimizationContext.project.penalization = newPenalization;
-  };
-
-  const [filterRadius, setFilterRadius] = useState(
-    optimizationContext.project.filterIndex
-  );
-
-  const changeFilterRadius = (newFilterRadius: number) => {
-    setFilterRadius(newFilterRadius);
-    optimizationContext.project.filterIndex = newFilterRadius;
-  };
-
-  const [elasticity, setElasticity] = useState(
-    optimizationContext.project.domain.materialProperties.elasticity
-  );
-
-  const changeElasticity = (newElasticity: number) => {
-    setElasticity(newElasticity);
-    optimizationContext.project.domain.materialProperties.elasticity =
-      newElasticity;
-  };
-
-  const [density, setDensity] = useState(
-    optimizationContext.project.domain.materialProperties.density
-  );
-  const changeDensity = (newDensity: number) => {
-    setDensity(newDensity);
-    optimizationContext.project.domain.materialProperties.density = newDensity;
-  };
-
   return (
     <div className={styles.completeConfiguration}>
       <div className={styles.configurationFields}>
@@ -63,26 +27,29 @@ export function DomainConfigurator(props: {
             label="Altura"
           />
           <InputField
-            value={penalization}
-            changeValue={changePenalization}
+            value={optimizationContext.penalization}
+            changeValue={optimizationContext.configurePenalization}
             label="Penalização"
           />
         </div>
         <div className={styles.configurator}>
           <InputField
-            value={density}
-            changeValue={changeDensity}
+            value={optimizationContext.materialDensity}
+            changeValue={optimizationContext.configureMaterialDensity}
             label="Densidade do Material"
+            step={0.1}
           />
           <InputField
-            value={elasticity}
-            changeValue={changeElasticity}
+            value={optimizationContext.materialElasticity}
+            changeValue={optimizationContext.configureMaterialElasticity}
             label="Elasticidade do Material"
+            step={0.1}
           />
           <InputField
-            value={filterRadius}
-            changeValue={changeFilterRadius}
+            value={optimizationContext.filterRadius}
+            changeValue={optimizationContext.configureFilterRadius}
             label="Raio da Filtragem"
+            step={0.1}
           />
         </div>
       </div>
