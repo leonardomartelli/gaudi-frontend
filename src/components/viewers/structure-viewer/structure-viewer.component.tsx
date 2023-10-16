@@ -979,10 +979,6 @@ export function StructureViewer(props: StructureViewerContract) {
     return angle;
   }
 
-  function angleBetween(x1: number, y1: number, x2: number, y2: number) {
-    return Math.atan2(y2 - y1, x2 - x1) * (180 / Math.PI);
-  }
-
   function getSupportIcon(s: Support) {
     return s.type === 0 ? "mobile_support" : "fixed_support";
   }
