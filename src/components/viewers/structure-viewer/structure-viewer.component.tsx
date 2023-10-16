@@ -15,8 +15,12 @@ import { PositionalCondition } from "../../../models/project/positionalCondition
 import { eCreationState } from "../../../models/enums/eCreationState";
 import { Position } from "../../../models/project/position.model";
 import { Dimensions } from "../../../models/project/dimensions.model";
+import { BoundaryConditionCreator } from "../../../creators/boundary-condition-creator/boundary-condition-creator";
+import StructureRender from "../../../renders/StructureRender";
 
 export function StructureViewer(props: StructureViewerContract) {
+  const boundaryConditionCreator = new BoundaryConditionCreator(props.forces, props.supports, props.constantRegions);
+
   const width = props.width;
   const height = props.height;
   const densities = props.densities;
@@ -33,149 +37,34 @@ export function StructureViewer(props: StructureViewerContract) {
   const innerPaddingX = viewerWidth * paddingRate;
   const innerPaddingY = viewerHeight * paddingRate;
 
-  let [creationXPosition, setCreationXPosition] = useState(0);
-  let [creationYPosition, setCreationYPosition] = useState(0);
   let [positionChanged, setPositionChanged] = useState(0);
 
   useEffect(() => {
-    const creationPosition = new Position(creationXPosition, creationYPosition);
-
-    switch (props.creationState) {
-      case eCreationState.FORCE:
-        props.forces.push(
-          new Force(
-            -1,
-            1,
-            creationPosition,
-            undefined,
-            (props.forces[props.forces.length - 1]?.id ?? -1) + 1
-          )
-        );
-        break;
-      case eCreationState.FIXED_SUPPORT:
-        props.supports.push(
-          new Support(
-            creationPosition,
-            1,
-            undefined,
-            (props.supports[props.supports.length - 1]?.id ?? -1) + 1
-          )
-        );
-        break;
-      case eCreationState.MOBILE_SUPPORT:
-        props.supports.push(
-          new Support(
-            creationPosition,
-            0,
-            undefined,
-            (props.supports[props.supports.length - 1]?.id ?? -1) + 1
-          )
-        );
-        break;
-      case eCreationState.VOID:
-        props.constantRegions.push(
-          new ConstantRegion(
-            creationPosition,
-            new Dimensions(10, 10),
-            0,
-            (props.constantRegions[props.constantRegions.length - 1]?.id ??
-              -1) + 1
-          )
-        );
-        break;
-      case eCreationState.MATERIAL:
-        props.constantRegions.push(
-          new ConstantRegion(
-            creationPosition,
-            new Dimensions(10, 10),
-            1,
-            (props.constantRegions[props.constantRegions.length - 1]?.id ??
-              -1) + 1
-          )
-        );
-        break;
-      default:
-        return;
-    }
-    setPositionChanged(positionChanged + 1);
-
-    props.setCreationState(eCreationState.NONE);
-  }, [creationXPosition, creationYPosition]);
-
-  useEffect(() => {
-    const svg = d3.select(ref.current);
-    svg
-      .selectAll(".contour")
-      .data<number>(d3.range(1))
-      .join("rect")
-      .attr("class", "contour")
-      .attr("x", "-5")
-      .attr("y", "-5")
-      .attr("width", width * squareSize + 10)
-      .attr("height", height * squareSize + 10)
-      .attr("stroke-width", "10")
-      .attr("fill", "none")
-      .attr("stroke", constants.POPPY);
+    StructureRender.renderStructureCountour(ref, width, height, squareSize);
   }, [width, height]);
 
   useEffect(() => {
-    function to_id(x: number, y: number) {
-      return x * height + y;
-    }
 
-    const svg = d3.select(ref.current);
-
-    svg
-      .attr("viewBox", [
-        -innerPaddingX,
-        -innerPaddingY,
-        viewerWidth + 2 * innerPaddingX,
-        viewerHeight + 2 * innerPaddingY,
-      ])
-      .attr("width", viewerWidth)
-      .attr("height", viewerHeight)
-      .attr("style", "width: 100%; height: 90%");
-
-    const structure = svg
-      .selectAll<SVGRectElement, number>(".dens")
-      .data<number>(d3.range(height * width))
-      .join("rect")
-      .attr("x", (d: number) => (d % width) * squareSize)
-      .attr("y", (d: number) => Math.floor(d / width) * squareSize)
-      .attr("width", squareSize)
-      .attr("height", squareSize)
-      .attr("class", "dens")
-      .attr("fill", constants.NIGHT_BLACK)
-      .attr(
-        "fill-opacity",
-        (d: number) => densities[to_id(d % width, Math.floor(d / width))]
-      )
-      .lower();
-
-    structure.on("click", (event: any) => {
+    const onClick = (event: any) => {
       const x = event.target.x.animVal.value;
       const y = event.target.y.animVal.value;
 
-      setCreationXPosition(Math.round(x / squareSize));
-      setCreationYPosition(Math.round(y / squareSize));
-    });
+      const creationPosition = new Position(Math.round(x / squareSize), Math.round(y / squareSize));
+
+      boundaryConditionCreator.create(creationPosition, props.creationState);
+      setPositionChanged(positionChanged + 1);
+
+      props.setCreationState(eCreationState.NONE);
+    };
+
+    StructureRender.renderStructure(ref, width, height, squareSize, innerPaddingX, innerPaddingY, viewerWidth, viewerHeight, densities, onClick);
 
     if (props.optimizationIdentifier !== "") {
       setCounter(counter + 1);
       props.triggerUpdate(counter);
     }
-  }, [
-    densities,
-    width,
-    height,
-    innerPaddingX,
-    innerPaddingY,
-    viewerWidth,
-    viewerHeight,
-    counter,
-    positionChanged,
-    props,
-  ]);
+    
+  }, [boundaryConditionCreator, counter, densities, height, innerPaddingX, innerPaddingY, positionChanged, props, viewerHeight, viewerWidth, width]);
 
   let deltaX = 0;
   let deltaY = 0;
@@ -226,8 +115,7 @@ export function StructureViewer(props: StructureViewerContract) {
       .attr("y", newForce.position.y * squareSize)
       .attr(
         "transform",
-        `rotate( ${getForceRotation(force)} ${force.position.x * squareSize} ${
-          force.position.y * squareSize
+        `rotate( ${getForceRotation(force)} ${force.position.x * squareSize} ${force.position.y * squareSize
         }) translate(${xToUse}, ${yToUse})`
       );
   };
@@ -906,7 +794,7 @@ export function StructureViewer(props: StructureViewerContract) {
       .attr(
         "cx",
         (constantRegion.position.x + constantRegion.dimensions.width) *
-          squareSize
+        squareSize
       )
       .attr("cy", constantRegion.position.y * squareSize);
 
@@ -916,12 +804,12 @@ export function StructureViewer(props: StructureViewerContract) {
       .attr(
         "cx",
         (constantRegion.position.x + constantRegion.dimensions.width) *
-          squareSize
+        squareSize
       )
       .attr(
         "cy",
         (constantRegion.position.y + constantRegion.dimensions.height) *
-          squareSize
+        squareSize
       );
 
     const point4 = svg.select(`#cr${constantRegion.id}p4`);
@@ -931,7 +819,7 @@ export function StructureViewer(props: StructureViewerContract) {
       .attr(
         "cy",
         (constantRegion.position.y + constantRegion.dimensions.height) *
-          squareSize
+        squareSize
       );
   }
 
