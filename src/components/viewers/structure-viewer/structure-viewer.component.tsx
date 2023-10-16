@@ -6,7 +6,11 @@ import { Force } from "../../../models/project/force.model";
 import styles from "./structure-viewer.module.scss";
 import { Support } from "../../../models/project/support.model";
 import { ConstantRegion } from "../../../models/project/constantRegion.model";
-import { Dimensionable } from "../../../models/project/dimensionsable.model";
+import {
+  getForceRotation,
+  getSupportIcon,
+  isDimensionable,
+} from "./structure-viewer.utils";
 import { PositionalCondition } from "../../../models/project/positionalCondition.model";
 import { eCreationState } from "../../../models/enums/eCreationState";
 import { Position } from "../../../models/project/position.model";
@@ -964,30 +968,4 @@ export function StructureViewer(props: StructureViewerContract) {
         .attr("style", "visibility: visible");
     }
   }
-
-  function getForceRotation(force: Force) {
-    let angle = 0;
-
-    if (force.orientation === 0) {
-      angle = 90;
-
-      if (force.load < 0) angle *= -1;
-    } else if (force.load > 0) {
-      angle = 180;
-    }
-
-    return angle;
-  }
-
-  function getSupportIcon(s: Support) {
-    return s.type === 0 ? "mobile_support" : "fixed_support";
-  }
-}
-
-function isDimensionable(obj: any): obj is Dimensionable {
-  return (
-    "dimensions" in obj &&
-    obj.dimensions &&
-    (obj.dimensions.width ?? 0) + (obj.dimensions.height ?? 0) > 0
-  );
 }
