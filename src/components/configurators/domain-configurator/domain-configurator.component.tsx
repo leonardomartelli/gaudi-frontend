@@ -1,15 +1,11 @@
-import { useContext, useState } from "react";
+import { useContext } from "react";
 import { OptimizationContext } from "../../../contexts/optimization-context/optimization-context";
 import { InputField } from "../../input/input-field/input-field.component";
 import styles from "./domain-configurator.module.scss";
 import { CommonSlider } from "../../input/common-slider/common-slider.component";
+import { DomainConfiguratorContract } from "./domain-configurator.interface";
 
-export function DomainConfigurator(props: {
-  width: number;
-  height: number;
-  configureWidth: (nW: number) => void;
-  configureHeight: (nH: number) => void;
-}) {
+export function DomainConfigurator(props: DomainConfiguratorContract) {
   const optimizationContext = useContext(OptimizationContext);
 
   return (
