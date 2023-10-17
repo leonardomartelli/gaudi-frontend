@@ -119,8 +119,8 @@ function renderBottomRightCorner(
   const bottomRightCorner = svg
     .selectAll<SVGCircleElement, ConstantRegion>(".bottomRightCorner")
     .data<ConstantRegion>(constantRegions)
-    .attr("fill", constants.HONOLULU_BLUE)
     .join("circle")
+    .attr("fill", constants.HONOLULU_BLUE)
     .attr("class", "bottomRightCorner")
     .attr(
       "cx",
@@ -151,8 +151,8 @@ function renderTopRightCorner(
   const topRightCorner = svg
     .selectAll<SVGCircleElement, ConstantRegion>(".topRightCorner")
     .data<ConstantRegion>(constantRegions)
-    .attr("fill", constants.HONOLULU_BLUE)
     .join("circle")
+    .attr("fill", constants.HONOLULU_BLUE)
     .attr("class", "topRightCorner")
     .attr(
       "cx",
@@ -180,8 +180,8 @@ function renderTopLeftCorner(
   const topLeftCorner = svg
     .selectAll<SVGCircleElement, ConstantRegion>(".topLeftCorner")
     .data<ConstantRegion>(constantRegions)
-    .attr("fill", constants.HONOLULU_BLUE)
     .join("circle")
+    .attr("fill", constants.HONOLULU_BLUE)
     .attr("class", "topLeftCorner")
     .attr("cx", (f: ConstantRegion) => f.position.x * squareSize)
     .attr("cy", (f: ConstantRegion) => f.position.y * squareSize)
