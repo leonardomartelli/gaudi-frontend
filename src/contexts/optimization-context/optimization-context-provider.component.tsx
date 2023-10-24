@@ -4,6 +4,8 @@ import OptimizationApi from "../../services/Optimization/apis/OptimizationApi";
 import { Project, defaultProject } from "../../models/project/project.model";
 import { OptimizationContextProviderContract } from "./optimization-context-provider.interface";
 import { eCreationState } from "../../models/enums/eCreationState";
+import toast from "react-hot-toast";
+import constants from "../../assets/constants";
 
 export function OptimizationContextProvider(
   props: PropsWithChildren<OptimizationContextProviderContract>
@@ -29,14 +31,14 @@ export function OptimizationContextProvider(
     ).fill(1)
   );
 
-  let [triggerUpdate, setTriggerUpdate] = useState(0);
+  const [triggerUpdate, setTriggerUpdate] = useState(0);
 
-  let [optimizationIdentifier, setOptimizationIdentifier] = useState("");
+  const [optimizationIdentifier, setOptimizationIdentifier] = useState("");
 
-  let [objective, setObjective] = useState(0);
-  let [volume, setVolume] = useState(0);
+  const [objective, setObjective] = useState(0);
+  const [volume, setVolume] = useState(0);
 
-  let [creationState, setCreationState] = useState<eCreationState>(
+  const [creationState, setCreationState] = useState<eCreationState>(
     eCreationState.NONE
   );
 
@@ -44,7 +46,25 @@ export function OptimizationContextProvider(
   const [volumes, setVolumes] = useState<number[]>([]);
 
   const onOptimizationStart = async () => {
-    setOptimizationIdentifier(await OptimizationApi.startOptimization(project));
+    const validationResult = await OptimizationApi.startOptimization(project);
+
+    setOptimizationIdentifier(validationResult.optimizationId ?? "");
+
+    if (validationResult.validationResults)
+      validationResult.validationResults.forEach((result: string) =>
+        toast.error(result, {
+          duration: 10000,
+          style: {
+            padding: "16px",
+            color: constants.ALICE_BLUE,
+            background: constants.POPPY,
+          },
+          iconTheme: {
+            primary: constants.ALICE_BLUE,
+            secondary: constants.POPPY,
+          },
+        })
+      );
 
     setObjectives([]);
     setVolumes([]);
@@ -56,7 +76,7 @@ export function OptimizationContextProvider(
     const fetchResult = async () => {
       let result = await OptimizationApi.getResult(optimizationIdentifier);
 
-      if (!result.finished) {
+      if (result && !result.finished) {
         setDensitites(result.densities);
         setObjective(result.objective);
         setVolume(result.volume);

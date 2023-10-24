@@ -2,21 +2,27 @@ import axios from "axios";
 import ServiceBase from "../../ServiceBase";
 import { Project } from "../../../models/project/project.model";
 import { Result } from "../../../models/optimization/result.model";
+import { ValidationResult } from "../../../models/optimization/validation-result.model";
 
 const url = "http://127.0.0.1:5000";
 
 function startOptimization(project: Project) {
-  return new Promise<string>((resolve, reject) => {
+  return new Promise<ValidationResult>((resolve, reject) => {
     axios
-      .post<string>(
+      .post<ValidationResult>(
         `${url}/optimize`,
         {
           project: project,
         },
         ServiceBase.getAxiosConfig(ServiceBase.getJsonHeaders())
       )
-      .then((res) => resolve(res.data))
-      .catch((res) => reject(res));
+      .then((res) => {
+        resolve(res.data);
+      })
+      .catch((res) => {
+        if (res.response?.status === 400) resolve(res.response.data);
+        else reject(res);
+      });
   });
 }
 
