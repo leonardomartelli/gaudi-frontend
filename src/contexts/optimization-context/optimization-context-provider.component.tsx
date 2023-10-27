@@ -53,11 +53,12 @@ export function OptimizationContextProvider(
     if (validationResult.validationResults)
       validationResult.validationResults.forEach((result: string) =>
         toast.error(result, {
-          duration: 10000,
+          duration: 6000,
           style: {
             padding: "16px",
             color: constants.ALICE_BLUE,
             background: constants.POPPY,
+            width: "30%",
           },
           iconTheme: {
             primary: constants.ALICE_BLUE,
