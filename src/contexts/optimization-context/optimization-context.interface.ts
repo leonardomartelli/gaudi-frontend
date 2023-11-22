@@ -12,12 +12,12 @@ export interface OptimizationContextContract {
   currentVolume: number;
 
   penalization: number;
-  materialDensity: number;
-  materialElasticity: number;
+  materialYoung: number;
+  materialPoisson: number;
   filterRadius: number;
   configurePenalization: (c: number) => void;
-  configureMaterialDensity: (c: number) => void;
-  configureMaterialElasticity: (c: number) => void;
+  configureMaterialYoung: (c: number) => void;
+  configureMaterialPoisson: (c: number) => void;
   configureFilterRadius: (c: number) => void;
 
   onOptimizationStart: () => void;

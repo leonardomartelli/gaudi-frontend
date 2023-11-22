@@ -1,9 +1,9 @@
 export class MaterialProperties {
-  elasticity: number;
-  density: number;
+  poisson: number;
+  young: number;
 
-  constructor(elasticity: number, density: number) {
-    this.elasticity = elasticity;
-    this.density = density;
+  constructor(poisson: number, young: number) {
+    this.poisson = poisson;
+    this.young = young;
   }
 }

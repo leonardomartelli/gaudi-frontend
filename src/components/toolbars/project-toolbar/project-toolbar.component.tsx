@@ -91,7 +91,7 @@ export function ProjectToolBar() {
       <CommonButton
         icon={ForceIcon}
         iconColor={constants.ALICE_BLUE}
-        label="Criar Carga"
+        label="Criar Força"
         onClick={() => {
           context.setCreationState(eCreationState.FORCE);
         }}

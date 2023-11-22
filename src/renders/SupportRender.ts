@@ -107,7 +107,8 @@ function rerenderSupport(
 
   leftSupport
     .attr("x", support.position.x * squareSize)
-    .attr("y", support.position.y * squareSize);
+    .attr("y", support.position.y * squareSize)
+    .raise();
 
   const supportRectangle = svg.select(`#srect${support.id}`);
   const rightSupport = svg.select(`#sr${support.id}`);
@@ -117,7 +118,8 @@ function rerenderSupport(
       .attr("y", support.position.y * squareSize)
       .attr("width", support.dimensions.width * squareSize)
       .attr("height", support.dimensions.height * squareSize)
-      .attr("style", "visibility: visible");
+      .attr("style", "visibility: visible")
+      .raise();
 
     rightSupport
       .attr(
@@ -128,7 +130,8 @@ function rerenderSupport(
         "y",
         (support.position.y + (support.dimensions?.height ?? 1)) * squareSize
       )
-      .attr("style", "visibility: visible");
+      .attr("style", "visibility: visible")
+      .raise();
   } else {
     supportRectangle.attr("style", "visibility: hidden");
 

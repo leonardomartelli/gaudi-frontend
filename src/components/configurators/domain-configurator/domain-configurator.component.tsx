@@ -30,15 +30,15 @@ export function DomainConfigurator(props: DomainConfiguratorContract) {
         </div>
         <div className={styles.configurator}>
           <InputField
-            value={optimizationContext.materialDensity}
-            changeValue={optimizationContext.configureMaterialDensity}
-            label="Densidade do Material"
+            value={optimizationContext.materialYoung}
+            changeValue={optimizationContext.configureMaterialYoung}
+            label="Módulo de Young"
             step={0.1}
           />
           <InputField
-            value={optimizationContext.materialElasticity}
-            changeValue={optimizationContext.configureMaterialElasticity}
-            label="Elasticidade do Material"
+            value={optimizationContext.materialPoisson}
+            changeValue={optimizationContext.configureMaterialPoisson}
+            label="Coeficiente de Poisson"
             step={0.1}
           />
           <InputField

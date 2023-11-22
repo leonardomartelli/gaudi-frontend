@@ -20,8 +20,8 @@ export function OptimizationContextProvider(
     setHeight(newProject.domain.dimensions.height);
 
     setFilterRadius(newProject.filterRadius);
-    setMaterialElasticity(newProject.domain.materialProperties.elasticity);
-    setMaterialDensity(newProject.domain.materialProperties.density);
+    setMaterialPoisson(newProject.domain.materialProperties.poisson);
+    setMaterialYoung(newProject.domain.materialProperties.young);
     setPenalization(newProject.penalization);
   };
 
@@ -116,22 +116,22 @@ export function OptimizationContextProvider(
     setVolumeFraction(val);
   };
 
-  const [materialDensity, setMaterialDensity] = useState(
-    project.domain.materialProperties.density
+  const [materialYoung, setMaterialYoung] = useState(
+    project.domain.materialProperties.young
   );
 
-  const configureMaterialDensity = (val: number) => {
-    project.domain.materialProperties.density = val;
-    setMaterialDensity(val);
+  const configureMaterialYoung = (val: number) => {
+    project.domain.materialProperties.young = val;
+    setMaterialYoung(val);
   };
 
-  const [materialElasticity, setMaterialElasticity] = useState(
-    project.domain.materialProperties.elasticity
+  const [materialPoisson, setMaterialPoisson] = useState(
+    project.domain.materialProperties.poisson
   );
 
-  const configureMaterialElasticity = (val: number) => {
-    project.domain.materialProperties.elasticity = val;
-    setMaterialElasticity(val);
+  const configureMaterialPoisson = (val: number) => {
+    project.domain.materialProperties.poisson = val;
+    setMaterialPoisson(val);
   };
 
   const [filterRadius, setFilterRadius] = useState(project.filterRadius);
@@ -198,10 +198,10 @@ export function OptimizationContextProvider(
       configurePenalization: configurePenalization,
       filterRadius: filterRadius,
       configureFilterRadius: configureFilterRadius,
-      materialDensity: materialDensity,
-      configureMaterialDensity: configureMaterialDensity,
-      materialElasticity: materialElasticity,
-      configureMaterialElasticity: configureMaterialElasticity,
+      materialYoung: materialYoung,
+      configureMaterialYoung: configureMaterialYoung,
+      materialPoisson: materialPoisson,
+      configureMaterialPoisson: configureMaterialPoisson,
     };
   };
 

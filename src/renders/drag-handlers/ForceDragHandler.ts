@@ -53,7 +53,8 @@ function getForceDragHandler(
         `rotate( ${getForceRotation(force)} ${force.position.x * squareSize} ${
           force.position.y * squareSize
         }) translate(${xToUse}, ${yToUse})`
-      );
+      )
+      .raise();
   };
 
   return get<SVGElement, Force>(

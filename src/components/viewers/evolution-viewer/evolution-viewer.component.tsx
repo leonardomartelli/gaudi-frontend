@@ -24,6 +24,9 @@ export function EvolutionViewer(props: EvolutionViewerContract) {
     const volumes: [number, number][] = [];
     const objectives: [number, number][] = [];
 
+    if (context.volumes.length > 0 && context.volumes.length % 7 === 0) {
+      console.log("le");
+    }
     for (let i = 0; i < context.volumes.length; i++)
       volumes.push([i, context.volumes[i]]);
 
@@ -104,7 +107,11 @@ export function EvolutionViewer(props: EvolutionViewerContract) {
       const ticks = [0];
 
       for (let i = 1; i <= 10; i++) {
-        ticks.push(Math.round(max * (i / 10)));
+        let tick = max * (i / 10);
+
+        if (tick > 10) tick = Math.round(tick);
+
+        ticks.push(tick);
       }
 
       return { objectiveY, objectiveLine, ticks };

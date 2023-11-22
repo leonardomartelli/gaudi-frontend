@@ -27,11 +27,11 @@ export const OptimizationContext = createContext<OptimizationContextContract>({
   removeConstantRegion: (id: number) => {},
 
   penalization: 0,
-  materialDensity: 0,
-  materialElasticity: 0,
+  materialYoung: 0,
+  materialPoisson: 0,
   filterRadius: 0,
   configurePenalization: (c: number) => {},
-  configureMaterialDensity: (c: number) => {},
-  configureMaterialElasticity: (c: number) => {},
+  configureMaterialYoung: (c: number) => {},
+  configureMaterialPoisson: (c: number) => {},
   configureFilterRadius: (c: number) => {},
 });
