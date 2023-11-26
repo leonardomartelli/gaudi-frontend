@@ -4,7 +4,7 @@ import { Project } from "../../../models/project/project.model";
 import { Result } from "../../../models/optimization/result.model";
 import { ValidationResult } from "../../../models/optimization/validation-result.model";
 
-const url = "http://127.0.0.1:5000";
+const url = "https://gaudi-backend.azurewebsites.net";
 
 function startOptimization(project: Project) {
   return new Promise<ValidationResult>((resolve, reject) => {
