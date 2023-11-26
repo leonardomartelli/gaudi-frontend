@@ -1,4 +1,3 @@
-import { isDimensionable } from "./common.utils";
 import { Support } from "../../models/project/support.model";
 
 function getSupportIcon(s: Support) {
