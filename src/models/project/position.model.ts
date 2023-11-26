@@ -1,5 +1,3 @@
-import { number } from "prop-types";
-
 export class Position {
   x: number;
   y: number;
