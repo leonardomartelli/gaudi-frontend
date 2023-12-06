@@ -38,6 +38,7 @@ export class BoundaryConditionCreator {
           new Support(
             creationPosition,
             1,
+            0,
             undefined,
             (this.supports[this.supports.length - 1]?.id ?? -1) + 1
           )
@@ -47,6 +48,7 @@ export class BoundaryConditionCreator {
         this.supports.push(
           new Support(
             creationPosition,
+            0,
             0,
             undefined,
             (this.supports[this.supports.length - 1]?.id ?? -1) + 1

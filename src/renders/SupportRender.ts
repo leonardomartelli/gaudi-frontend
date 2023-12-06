@@ -43,7 +43,7 @@ function renderSupports(
     .join("use")
     .attr("class", "leftSupport")
     .attr("id", (f: Support) => `sl${f.id}`)
-    .attr("href", (s: Support) => `#${getSupportIcon(s)}`)
+    .attr("href", (s: Support) => getSupportIcon(s, false))
     .attr("x", (f: Support) => f.position.x * squareSize)
     .attr("y", (f: Support) => f.position.y * squareSize)
     .attr("style", "visibility:visible")
@@ -55,7 +55,7 @@ function renderSupports(
     .join("use")
     .attr("class", "rightSupport")
     .attr("id", (f: Support) => `sr${f.id}`)
-    .attr("href", (s: Support) => `#inverted_${getSupportIcon(s)}`)
+    .attr("href", (s: Support) => getSupportIcon(s, true))
     .attr(
       "x",
       (sup: Support) =>
@@ -108,9 +108,11 @@ function rerenderSupport(
   leftSupport
     .attr("x", support.position.x * squareSize)
     .attr("y", support.position.y * squareSize)
+    .attr("href", getSupportIcon(support, false))
     .raise();
 
   const supportRectangle = svg.select(`#srect${support.id}`);
+
   const rightSupport = svg.select(`#sr${support.id}`);
   if (isDimensionable(support)) {
     supportRectangle
@@ -130,6 +132,7 @@ function rerenderSupport(
         "y",
         (support.position.y + (support.dimensions?.height ?? 1)) * squareSize
       )
+      .attr("href", getSupportIcon(support, true))
       .attr("style", "visibility: visible")
       .raise();
   } else {
