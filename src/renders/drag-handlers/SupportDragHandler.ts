@@ -20,6 +20,7 @@ function getLeftSupportDragHandler(
     const newSupport = new Support(
       leftSupport.position,
       leftSupport.type,
+      leftSupport.direction,
       leftSupport.dimensions,
       leftSupport.id
     );
@@ -77,6 +78,7 @@ function getRectangleSupportDragHandler(
     const newSupport = new Support(
       support.position,
       support.type,
+      support.direction,
       support.dimensions,
       support.id
     );

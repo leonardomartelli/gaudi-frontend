@@ -8,10 +8,12 @@ export class Support implements PositionalCondition, Dimensionable {
   type: number;
   position: Position;
   id: number;
+  direction: number;
 
   constructor(
     position: Position,
     type: number,
+    direction: number,
     dimensions: Dimensions | undefined,
     id?: number
   ) {
@@ -19,6 +21,7 @@ export class Support implements PositionalCondition, Dimensionable {
     this.dimensions = dimensions ?? new Dimensions(0, 0);
     this.type = type;
     this.id = id ?? 0;
+    this.direction = direction;
   }
 
   setPosition(x: number, y: number, maxX: number, maxY: number) {

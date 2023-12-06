@@ -141,23 +141,31 @@ export function StructureViewer(props: StructureViewerContract) {
       const datum: Support = event.target.__data__;
       if (event.shiftKey) {
         props.removeSupport(datum.id);
+      } else if (event.altKey) {
+        datum.direction = datum.direction > 0 ? 0 : 1;
       } else if (isDimensionable(datum) === false) {
         datum.dimensions = new Dimensions(5, 5);
+      }
+      SupportRender.rerenderSupport(ref, datum, squareSize);
+    };
+
+    const onClickRectangle = (event: any) => {
+      const datum = event.target.__data__;
+      if (event.shiftKey) {
+        props.removeSupport(datum.id);
+      } else if (event.altKey) {
+        datum.direction = datum.direction > 0 ? 0 : 1;
         SupportRender.rerenderSupport(ref, datum, squareSize);
       }
     };
 
-    const onClickRectangle = (event: any) => {
-      if (event.shiftKey) {
-        const datum = event.target.__data__;
-        props.removeSupport(datum.id);
-      }
-    };
-
     const onClickRightSupport = (event: any) => {
+      const datum = event.target.__data__;
       if (event.shiftKey) {
-        const datum = event.target.__data__;
         props.removeSupport(datum.id);
+      } else if (event.altKey) {
+        datum.direction = datum.direction > 0 ? 0 : 1;
+        SupportRender.rerenderSupport(ref, datum, squareSize);
       }
     };
 
