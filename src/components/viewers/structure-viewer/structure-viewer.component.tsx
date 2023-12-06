@@ -102,7 +102,7 @@ export function StructureViewer(props: StructureViewerContract) {
       if (event.shiftKey) {
         const datum = event.target.__data__;
         props.removeForce(datum.id);
-      } else {
+      } else if (event.altKey) {
         datum.orientation = (datum.orientation + 1) % 2;
         setPositionChanged(positionChanged + 1);
       }
