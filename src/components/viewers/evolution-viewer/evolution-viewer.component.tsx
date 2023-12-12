@@ -24,9 +24,6 @@ export function EvolutionViewer(props: EvolutionViewerContract) {
     const volumes: [number, number][] = [];
     const objectives: [number, number][] = [];
 
-    if (context.volumes.length > 0 && context.volumes.length % 7 === 0) {
-      console.log("le");
-    }
     for (let i = 0; i < context.volumes.length; i++)
       volumes.push([i, context.volumes[i]]);
 

@@ -15,8 +15,6 @@ function getLeftSupportDragHandler(
     const x = Math.round((event.x + deltaX) / squareSize);
     const y = Math.round((event.y + deltaY) / squareSize);
 
-    console.log(y);
-
     const newSupport = new Support(
       leftSupport.position,
       leftSupport.type,
