@@ -30,8 +30,6 @@ export function StructureViewer(props: StructureViewerContract) {
   const height = props.height;
   const densities = props.densities;
 
-  let [counter, setCounter] = useState(1);
-
   const ref = useRef(null);
 
   const squareSize = 12;
@@ -83,7 +81,6 @@ export function StructureViewer(props: StructureViewerContract) {
     // }
   }, [
     boundaryConditionCreator,
-    counter,
     densities,
     height,
     innerPaddingX,
