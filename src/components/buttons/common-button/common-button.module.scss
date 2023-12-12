@@ -4,16 +4,36 @@
   display: inline-grid;
   color: $alice-blue;
   background-color: $poppy;
-  border: none;
   margin: 15px;
-  width: 75px;
+  border: none;
+  width: 100px;
+  border-radius: 12pt;
   justify-items: center;
   justify-content: center;
   justify-self: center;
+  height: 160px;
+  align-content: space-around;
+  text-align: center;
+}
+
+.loading {
+  display: inline-grid;
+  color: $alice-blue;
+  margin: 15px;
+  border: none;
+  width: 100px;
+  border-radius: 6pt;
+  justify-items: center;
+  justify-content: center;
+  justify-self: center;
+  background-color: rgb(202, 48, 59);
+  height: 160px;
+  align-content: space-around;
+  text-align: center;
 }
 
 .label {
-  align-content: start;
+  align-content: center;
   font-size: 14pt;
 }
 
@@ -21,4 +41,5 @@
   height: 60%;
   align-items: center;
   align-self: center;
+  display: flex;
 }

@@ -2,6 +2,7 @@ import { createContext } from "react";
 import { Project, defaultProject } from "../../models/project/project.model";
 import { OptimizationContextContract } from "./optimization-context.interface";
 import { eCreationState } from "../../models/enums/eCreationState";
+import { eAppState } from "../../models/enums/eAppState";
 
 export const OptimizationContext = createContext<OptimizationContextContract>({
   project: defaultProject,
@@ -9,7 +10,6 @@ export const OptimizationContext = createContext<OptimizationContextContract>({
   densities: [0],
   currentObjective: 0,
   currentVolume: 0,
-  setTriggerUpdate: (c: number) => {},
   updateProject: (p: Project) => {},
   creationState: eCreationState.NONE,
   setCreationState: (ns: eCreationState) => {},
@@ -34,4 +34,7 @@ export const OptimizationContext = createContext<OptimizationContextContract>({
   configureMaterialYoung: (c: number) => {},
   configureMaterialPoisson: (c: number) => {},
   configureFilterRadius: (c: number) => {},
+
+  setAppState: (nS: eAppState) => {},
+  appState: eAppState.NONE,
 });

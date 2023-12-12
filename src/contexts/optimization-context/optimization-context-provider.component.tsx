@@ -6,6 +6,7 @@ import { OptimizationContextProviderContract } from "./optimization-context-prov
 import { eCreationState } from "../../models/enums/eCreationState";
 import toast from "react-hot-toast";
 import constants from "../../assets/constants";
+import { eAppState } from "../../models/enums/eAppState";
 
 export function OptimizationContextProvider(
   props: PropsWithChildren<OptimizationContextProviderContract>
@@ -31,8 +32,6 @@ export function OptimizationContextProvider(
     ).fill(1)
   );
 
-  const [triggerUpdate, setTriggerUpdate] = useState(0);
-
   const [optimizationIdentifier, setOptimizationIdentifier] = useState("");
 
   const [objective, setObjective] = useState(0);
@@ -42,10 +41,14 @@ export function OptimizationContextProvider(
     eCreationState.NONE
   );
 
+  const [appState, setAppState] = useState(eAppState.NONE);
+
   const [objectives, setObjectives] = useState<number[]>([]);
   const [volumes, setVolumes] = useState<number[]>([]);
 
   const onOptimizationStart = async () => {
+    setAppState(eAppState.INITIALIZING_OPTIMIZATION);
+
     const validationResult = await OptimizationApi.startOptimization(project);
 
     setOptimizationIdentifier(validationResult.optimizationId ?? "");
@@ -69,6 +72,7 @@ export function OptimizationContextProvider(
 
     setObjectives([]);
     setVolumes([]);
+    setAppState(eAppState.NONE);
   };
 
   useEffect(() => {
@@ -182,9 +186,11 @@ export function OptimizationContextProvider(
 
       updateProject: updateProject,
       onOptimizationStart: onOptimizationStart,
-      setTriggerUpdate: setTriggerUpdate,
 
       setCreationState: setCreationState,
+
+      setAppState: setAppState,
+      appState: appState,
 
       removeSupport: removeSupport,
       removeConstantRegion: removeConstantRegion,

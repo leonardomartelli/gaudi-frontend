@@ -38,9 +38,6 @@ export function ProjectViewer() {
         }
         creationState={optimizationContext.creationState}
         setCreationState={optimizationContext.setCreationState}
-        triggerUpdate={(target: number) =>
-          optimizationContext.setTriggerUpdate(target)
-        }
         optimizationIdentifier={optimizationContext.optimizationIdentifier}
         removeSupport={(id: number) =>
           removeCondition(optimizationContext.removeSupport, id)
