@@ -8,8 +8,15 @@ export function CommonButton(props: CommonButtonContract) {
     style: { color: props.iconColor },
   };
 
+  const _default = () => false;
+
+  const isSelected = props.isSelected ?? _default;
+
   return (
-    <button onClick={props.onClick} className={styles.button}>
+    <button
+      onClick={props.onClick}
+      className={isSelected() ? styles.loading : styles.button}
+    >
       <div className={styles.icon}>
         {props.icon && <props.icon {...iconStyle} />}
       </div>

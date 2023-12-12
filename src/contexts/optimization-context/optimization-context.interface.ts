@@ -1,4 +1,5 @@
 import { eCreationState } from "../../models/enums/eCreationState";
+import { eAppState } from "../../models/enums/eAppState";
 import { Project } from "../../models/project/project.model";
 
 export interface OptimizationContextContract {
@@ -26,9 +27,10 @@ export interface OptimizationContextContract {
   volumes: Array<number>;
   objectives: Array<number>;
   creationState: eCreationState;
+  appState: eAppState;
 
   setCreationState: (newState: eCreationState) => void;
-  setTriggerUpdate: (c: number) => void;
+  setAppState: (newState: eAppState) => void;
   updateProject: (newProject: Project) => void;
 
   configureWidth: (nW: number) => void;

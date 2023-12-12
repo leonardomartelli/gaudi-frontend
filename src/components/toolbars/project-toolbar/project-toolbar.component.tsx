@@ -14,6 +14,7 @@ import { MaterialConstanRegionIcon } from "../../icons/material-constant-region-
 import { StartIcon } from "../../icons/start-icon.component";
 import { OptimizationContext } from "../../../contexts/optimization-context/optimization-context";
 import { eCreationState } from "../../../models/enums/eCreationState";
+import { eAppState } from "../../../models/enums/eAppState";
 
 export function ProjectToolBar() {
   const inputRef = useRef<HTMLInputElement>(null);
@@ -21,11 +22,15 @@ export function ProjectToolBar() {
   let context = useContext(OptimizationContext);
 
   const onClick = () => {
+    context.setAppState(eAppState.LOADING_PROJECT);
     inputRef.current!.click();
+    context.setAppState(eAppState.NONE);
   };
 
   const exportProject = () => {
+    context.setAppState(eAppState.DOWNLOADING_PROJECT);
     download(JSON.stringify(context.project), `project.json`, "text/plain");
+    context.setAppState(eAppState.NONE);
   };
 
   const onFileLoaded = async (file: File) => {
@@ -34,6 +39,8 @@ export function ProjectToolBar() {
     context.updateProject(project);
 
     context.configureVolumeFraction(project.domain.volumeFraction * 100);
+
+    context.setAppState(eAppState.NONE);
   };
 
   const download = (content: string, fileName: string, contentType: string) => {
@@ -53,6 +60,7 @@ export function ProjectToolBar() {
         iconColor={constants.ALICE_BLUE}
         label="Carregar Projeto"
         onClick={onClick}
+        isSelected={() => context.appState === eAppState.LOADING_PROJECT}
       />
 
       <CommonButton
@@ -60,6 +68,7 @@ export function ProjectToolBar() {
         iconColor={constants.ALICE_BLUE}
         label="Salvar Projeto"
         onClick={exportProject}
+        isSelected={() => context.appState === eAppState.DOWNLOADING_PROJECT}
       />
 
       <SeparatorIcon
@@ -77,6 +86,9 @@ export function ProjectToolBar() {
         onClick={() => {
           context.setCreationState(eCreationState.FIXED_SUPPORT);
         }}
+        isSelected={() =>
+          context.creationState === eCreationState.FIXED_SUPPORT
+        }
       />
 
       <CommonButton
@@ -86,6 +98,9 @@ export function ProjectToolBar() {
         onClick={() => {
           context.setCreationState(eCreationState.MOBILE_SUPPORT);
         }}
+        isSelected={() =>
+          context.creationState === eCreationState.MOBILE_SUPPORT
+        }
       />
 
       <CommonButton
@@ -95,6 +110,7 @@ export function ProjectToolBar() {
         onClick={() => {
           context.setCreationState(eCreationState.FORCE);
         }}
+        isSelected={() => context.creationState === eCreationState.FORCE}
       />
       <CommonButton
         icon={VoidConstantRegionIcon}
@@ -103,6 +119,7 @@ export function ProjectToolBar() {
         onClick={() => {
           context.setCreationState(eCreationState.VOID);
         }}
+        isSelected={() => context.creationState === eCreationState.VOID}
       />
       <CommonButton
         icon={MaterialConstanRegionIcon}
@@ -111,6 +128,7 @@ export function ProjectToolBar() {
         onClick={() => {
           context.setCreationState(eCreationState.MATERIAL);
         }}
+        isSelected={() => context.creationState === eCreationState.MATERIAL}
       />
 
       <SeparatorIcon
@@ -126,6 +144,9 @@ export function ProjectToolBar() {
         iconColor={constants.ALICE_BLUE}
         label="Iniciar Otimização"
         onClick={context.onOptimizationStart}
+        isSelected={() =>
+          context.appState === eAppState.INITIALIZING_OPTIMIZATION
+        }
       />
     </div>
   );

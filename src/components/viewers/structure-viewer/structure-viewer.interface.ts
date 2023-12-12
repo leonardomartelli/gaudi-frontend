@@ -12,7 +12,6 @@ export interface StructureViewerContract extends CommonComponentContract {
   constantRegions: Array<ConstantRegion>;
   width: number;
   height: number;
-  triggerUpdate: (trigger: number) => void;
   creationState: eCreationState;
   setCreationState: (newState: eCreationState) => void;
   removeSupport: (id: number) => void;
