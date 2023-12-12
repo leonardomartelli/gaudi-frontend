@@ -89,7 +89,7 @@ export function OptimizationContextProvider(
       }
     };
     fetchResult().catch(console.error);
-  }, [objectives, optimizationIdentifier, triggerUpdate, volumes]);
+  }, [objectives, optimizationIdentifier, volumes, densities]);
 
   const [height, setHeight] = useState(project.domain.dimensions.height);
 

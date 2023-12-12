@@ -77,10 +77,10 @@ export function StructureViewer(props: StructureViewerContract) {
       onClick
     );
 
-    if (props.optimizationIdentifier !== "") {
-      setCounter(counter + 1);
-      props.triggerUpdate(counter);
-    }
+    // if (props.optimizationIdentifier !== "") {
+    //   setCounter(counter + 1);
+    //   props.triggerUpdate(counter);
+    // }
   }, [
     boundaryConditionCreator,
     counter,
