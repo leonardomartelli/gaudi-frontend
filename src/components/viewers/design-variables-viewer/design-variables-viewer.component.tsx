@@ -7,7 +7,7 @@ export function DesignVariablesViewer(props: DesignVariablesViewerContract) {
     <div className={styles.container}>
       <div className={styles.variables}>
         <label className={styles.label}>
-          Objetivo: {props.objective.toFixed(3)}
+          Objective: {props.objective.toFixed(3)}
         </label>
         <label className={styles.label}>
           Volume: {props.volume.toFixed(3)}

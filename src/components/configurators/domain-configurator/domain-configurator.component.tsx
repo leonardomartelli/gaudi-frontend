@@ -15,36 +15,36 @@ export function DomainConfigurator(props: DomainConfiguratorContract) {
           <InputField
             value={props.width}
             changeValue={props.configureWidth}
-            label="Largura"
+            label="Width"
           />
           <InputField
             value={props.height}
             changeValue={props.configureHeight}
-            label="Altura"
+            label="Height"
           />
           <InputField
             value={optimizationContext.penalization}
             changeValue={optimizationContext.configurePenalization}
-            label="Penalização"
+            label="Penalization"
           />
         </div>
         <div className={styles.configurator}>
           <InputField
             value={optimizationContext.materialYoung}
             changeValue={optimizationContext.configureMaterialYoung}
-            label="Módulo de Young"
+            label="Young Modulus"
             step={0.1}
           />
           <InputField
             value={optimizationContext.materialPoisson}
             changeValue={optimizationContext.configureMaterialPoisson}
-            label="Coeficiente de Poisson"
+            label="Poisson Coefficient"
             step={0.1}
           />
           <InputField
             value={optimizationContext.filterRadius}
             changeValue={optimizationContext.configureFilterRadius}
-            label="Raio da Filtragem"
+            label="Filter Radius"
             step={0.1}
           />
         </div>

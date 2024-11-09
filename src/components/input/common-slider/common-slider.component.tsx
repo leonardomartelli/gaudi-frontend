@@ -4,7 +4,7 @@ import styles from "./common-slider.module.scss";
 export function CommonSlider(props: CommonSliderContract) {
   return (
     <div className={styles.container}>
-      <label className={styles.label}>Fração de Volume Máxima</label>
+      <label className={styles.label}>Maximum Volume Fraction</label>
       <br />
       <input
         type="range"

@@ -199,7 +199,7 @@ function drawRightYAxis(
         .attr("fill", constants.ALICE_BLUE)
         .attr("font-size", axisFontSize)
         .attr("text-anchor", "middle")
-        .text("Objetivo")
+        .text("Objective")
     );
 }
 

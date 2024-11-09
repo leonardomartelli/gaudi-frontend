@@ -58,7 +58,7 @@ export function ProjectToolBar() {
       <CommonButton
         icon={ArrowUpIcon}
         iconColor={constants.ALICE_BLUE}
-        label="Carregar Projeto"
+        label="Load Project"
         onClick={onClick}
         isSelected={() => context.appState === eAppState.LOADING_PROJECT}
       />
@@ -66,7 +66,7 @@ export function ProjectToolBar() {
       <CommonButton
         icon={ArrowDownIcon}
         iconColor={constants.ALICE_BLUE}
-        label="Salvar Projeto"
+        label="Save Project"
         onClick={exportProject}
         isSelected={() => context.appState === eAppState.DOWNLOADING_PROJECT}
       />
@@ -82,7 +82,7 @@ export function ProjectToolBar() {
       <CommonButton
         icon={FixedSupportIcon}
         iconColor={constants.ALICE_BLUE}
-        label="Criar Suporte Fixo"
+        label="Create Fixed Support"
         onClick={() => {
           context.setCreationState(eCreationState.FIXED_SUPPORT);
         }}
@@ -94,7 +94,7 @@ export function ProjectToolBar() {
       <CommonButton
         icon={MobileSupportIcon}
         iconColor={constants.ALICE_BLUE}
-        label="Criar Suporte Móvel"
+        label="Create Mobile Support"
         onClick={() => {
           context.setCreationState(eCreationState.MOBILE_SUPPORT);
         }}
@@ -106,7 +106,7 @@ export function ProjectToolBar() {
       <CommonButton
         icon={ForceIcon}
         iconColor={constants.ALICE_BLUE}
-        label="Criar Força"
+        label="Create Force"
         onClick={() => {
           context.setCreationState(eCreationState.FORCE);
         }}
@@ -115,7 +115,7 @@ export function ProjectToolBar() {
       <CommonButton
         icon={VoidConstantRegionIcon}
         iconColor={constants.ALICE_BLUE}
-        label="Criar Vazio Constante"
+        label="Create Constant Void"
         onClick={() => {
           context.setCreationState(eCreationState.VOID);
         }}
@@ -124,7 +124,7 @@ export function ProjectToolBar() {
       <CommonButton
         icon={MaterialConstanRegionIcon}
         iconColor={constants.ALICE_BLUE}
-        label="Criar Material Constante"
+        label="Create Constant Material"
         onClick={() => {
           context.setCreationState(eCreationState.MATERIAL);
         }}
@@ -142,7 +142,7 @@ export function ProjectToolBar() {
       <CommonButton
         icon={StartIcon}
         iconColor={constants.ALICE_BLUE}
-        label="Iniciar Otimização"
+        label="Start Optimization"
         onClick={context.onOptimizationStart}
         isSelected={() =>
           context.appState === eAppState.INITIALIZING_OPTIMIZATION
